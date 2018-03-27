@@ -1,10 +1,6 @@
 <template>
   <q-page padding>
-     <q-btn
-       label="Teste"
-      @click="getAtividades()"
-     ></q-btn>
-  
+    <h4>Atividades Realizadas</h4>
   <div>
      <q-select  
       toggle
@@ -27,8 +23,7 @@
 
 <script>
 import axios from "axios";
-
-//getAtividades()
+import { LocalStorage } from "quasar";
 
 export default {
   data() {
@@ -92,13 +87,31 @@ export default {
     getAtividades() {
       let self = this;
       let uri = "http://si.accist.com.br/api/Atividades_Real";
-      axios.get(uri).then(function(response) {
-        let dataResponse = response.data;
-        self.Atividades = dataResponse.Atividades;
-        self.PeriodoAtual = dataResponse.PeriodoAtual;
-        self.Periodos = self.createPeriodos(dataResponse.Periodos);
-        self.Totais = dataResponse.Totais;
-      });
+      let accessToken = LocalStorage.get.item("accessToken");
+
+      if (!accessToken) {
+        window.location = '/login'
+      };
+
+      let config = {
+        headers: {
+          Authorization: "bearer " + accessToken,
+          "Content-Type": "application/json"
+        }
+      };
+
+      axios
+        .get(uri, config)
+        .then(function(response) {
+          let dataResponse = response.data;
+          self.Atividades = dataResponse.Atividades;
+          self.PeriodoAtual = dataResponse.PeriodoAtual;
+          self.Periodos = self.createPeriodos(dataResponse.Periodos);
+          self.Totais = dataResponse.Totais;
+        })
+        .catch(function(errors) {
+          return;
+        });
     },
     createPeriodos(periodos) {
       let periodosArray = [];
@@ -111,8 +124,9 @@ export default {
       alert(JSON.stringify(item));
     }
   },
-  mounted:function(){
-    alert(this.$store.login.access_token);
+  mounted: function() {
+    let self = this;
+    self.getAtividades();
   }
 };
 </script>

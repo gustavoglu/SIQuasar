@@ -5,7 +5,7 @@
       <div float-right>
         <q-input name="username" v-model="loginModel.username" class="inputLogin" stack-label="Email" type="email"/>
         <q-input name="password" v-model="loginModel.password" class="inputLogin" stack-label="Senha" type="password"/>
-        <q-btn @click="login()" color="primary" class="btn-login" flat right label="Login"/>
+        <q-btn @click="loading(true)" color="primary" class="btn-login" flat right label="Login"/>
       </div>
     </q-page>
   </q-layout-container>
@@ -15,8 +15,13 @@
 <script>
 import axios from "axios";
 import qs from "qs";
-import { Notify, Loading,QSpinnerGears } from "quasar";
-
+import {
+  Notify,
+  Loading,
+  QSpinnerGears,
+  LocalStorage,
+  SessionStorage
+} from "quasar"
 export default {
   data() {
     return {
@@ -25,11 +30,15 @@ export default {
         password: "",
         grant_type: "password"
       }
-    }
+    };
+  },
+  mounted: function() {
+    let self = this;
+    let username = LocalStorage.get.item("username");
+    if (username) self.loginModel.username = username;
   },
   methods: {
     login() {
-      Loading.show();
 
       let self = this;
       let uri = "http://si.accist.com.br/token";
@@ -45,17 +54,18 @@ export default {
             type: "positive",
             message: "Logado",
             position: "top"
-          }
+          };
 
           Notify.create(notify);
 
-          let  data = response.data
-          let username = self.loginModel.username
-          let access_token = data.access_token
+          let data = response.data;
+          let username = self.loginModel.username;
+          let access_token = data.access_token;
 
-          this.$store.commit('SET_USERNAME',username)
-          this.$store.commit('SET_ACCESSTOKEN',access_token)
-          window.location = '/atividades'
+          LocalStorage.set("username", username);
+          LocalStorage.set("accessToken", access_token);
+
+          window.location = "/atividades";
           //Loading.hide();
         })
         .catch(function(error) {
@@ -69,6 +79,11 @@ export default {
 
           //Loading.hide();
         });
+    },
+    loading(show) {
+      let self = this
+      if (show) Loading.show()
+      Loading.hide();
     }
   }
 };
