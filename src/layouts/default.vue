@@ -2,8 +2,8 @@
   <q-layout view="lHh Lpr lFf">
     <q-layout-header>
       <q-toolbar
-        color="primary"
-        :glossy="$q.theme === 'mat'"
+        color="secondary"
+
         :inverted="$q.theme === 'ios'"
       >
         <q-btn
@@ -17,8 +17,7 @@
         </q-btn>
 
         <q-toolbar-title>
-          Quasar App
-          <div slot="subtitle">Running on Quasar v{{ $q.version }}</div>
+          ACCIST SI
         </q-toolbar-title>
       </q-toolbar>
     </q-layout-header>
