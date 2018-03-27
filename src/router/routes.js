@@ -1,11 +1,11 @@
 
 export default [
   {
-    path: '/',
+    path: '/atividades',
     component: () => import('layouts/default'),
     children: [
-      { path: '', component: () => import('pages/atividades') },
-      { path: '/atividades/edit', component: () => import('pages/edit') }
+      { path: '/atividades', component: () => import('pages/atividades/list') },
+      { path: '/atividades/edit', component: () => import('pages/atividades/edit') }
     ]
   },
   {

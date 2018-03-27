@@ -110,6 +110,9 @@ export default {
     tableClick(item) {
       alert(JSON.stringify(item));
     }
+  },
+  mounted:function(){
+    alert(this.$store.login.access_token);
   }
 };
 </script>

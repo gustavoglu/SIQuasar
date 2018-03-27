@@ -1,10 +1,10 @@
 <template>
-<q-layout background="secondary">
+<q-layout class="layout"  background="secondary">
   <q-layout-container>
     <q-page padding>
       <div float-right>
-        <q-input class="inputLogin" stack-label="Email" type="email"/>
-        <q-input class="inputLogin" stack-label="Senha" type="password"/>
+        <q-input name="username" v-model="loginModel.username" class="inputLogin" stack-label="Email" type="email"/>
+        <q-input name="password" v-model="loginModel.password" class="inputLogin" stack-label="Senha" type="password"/>
         <q-btn @click="login()" color="primary" class="btn-login" flat right label="Login"/>
       </div>
     </q-page>
@@ -14,37 +14,71 @@
 
 <script>
 import axios from "axios";
+import qs from "qs";
+import { Notify, Loading,QSpinnerGears } from "quasar";
+
 export default {
   data() {
-    return {};
+    return {
+      loginModel: {
+        username: "",
+        password: "",
+        grant_type: "password"
+      }
+    }
   },
   methods: {
     login() {
-      let loginModel = {
-        username: "gustavoglu@hotmail.com",
-        password: "giroldinhufenix",
-        grant_type: "password"
-      };
+      Loading.show();
+
+      let self = this;
       let uri = "http://si.accist.com.br/token";
+
       let config = {
-        headers: { "Content-Type": "application/x-www-form-urlencoded" },
-        //body: loginModel
-      }
-      axios.post(uri, loginModel,config)
-      .then(function(response) {
-        alert(JSON.stringify(response));
-        let data = response.data;
-        let token = data.access_token;
-      })
-      .catch(function(error){
-      alert(error)
-    })
+        headers: { "Content-Type": "application/x-www-form-urlencoded" }
+      };
+
+      axios
+        .post(uri, qs.stringify(self.loginModel), config)
+        .then(function(response) {
+          let notify = {
+            type: "positive",
+            message: "Logado",
+            position: "top"
+          }
+
+          Notify.create(notify);
+
+          let  data = response.data
+          let username = self.loginModel.username
+          let access_token = data.access_token
+
+          this.$store.commit('SET_USERNAME',username)
+          this.$store.commit('SET_ACCESSTOKEN',access_token)
+          window.location = '/atividades'
+          //Loading.hide();
+        })
+        .catch(function(error) {
+          let notify = {
+            type: "warning",
+            message: "Não foi possivel se logar, verifique seu usuario e senha",
+            position: "top"
+          };
+
+          Notify.create(notify);
+
+          //Loading.hide();
+        });
+    }
   }
- }
-}
+};
 </script>
 
-<style>
+<style lang="stylus">
+.layout {
+  padding: 50px, background = 'black';
+}
+
 .inputLogin {
   margin: 10px;
 }
