@@ -5,7 +5,7 @@
       <div float-right>
         <q-input name="username" v-model="loginModel.username" class="inputLogin" stack-label="Email" type="email"/>
         <q-input name="password" v-model="loginModel.password" class="inputLogin" stack-label="Senha" type="password"/>
-        <q-btn @click="loading(true)" color="primary" class="btn-login" flat right label="Login"/>
+        <q-btn @click="login()" color="primary" class="btn-login" flat right label="Login"/>
       </div>
     </q-page>
   </q-layout-container>
