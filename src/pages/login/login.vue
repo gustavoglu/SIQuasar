@@ -5,7 +5,7 @@
       <div class=" row flex-center fit">
       <img src="assets/logoaccist320.png">
       </div>
-      <div class = "absolute-center">
+      <div>
         <q-input color="secondary" name="username" v-model="loginModel.username" class="inputLogin" stack-label="Email" type="email"/>
         <q-input  color="secondary" name="password" v-model="loginModel.password" class="inputLogin" stack-label="Senha" type="password"/>
         <q-btn  @click="login()" color="secondary" class="btn-login" flat right label="Login"/>
