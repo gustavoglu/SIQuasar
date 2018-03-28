@@ -7,15 +7,18 @@
       v-model="select" 
       :options="Periodos"
       :selected = "PeriodoAtual" 
-      @change="periodoChange"
+      :change="periodoChange"
       float-label = "Periodo"
      />
  </div>
  <div>
+ 
    <q-table 
    :data="tableDataCreate(this.Atividades)" 
    :columns="columns" 
-   selection="single">
+   pagination = "serverPagination"
+   >
+   
       <q-tr 
       slot="body" 
       slot-scope="props" 
@@ -25,7 +28,7 @@
         <q-td v-for="col in props.cols" :key="col.name" :props="props">
            {{ col.value }} 
         </q-td>
-      </q-tr>
+      </q-tr> 
       
    </q-table>
  </div>
@@ -35,13 +38,14 @@
 <script>
 import axios from "axios";
 import { LocalStorage } from "quasar";
-import qs from 'qs'
+import qs from "qs";
 
 export default {
   data() {
     return {
-      serverPagination:{
-        rowsNumber:20
+      serverPagination: {
+        page:1,
+        rowsNumber: 20
       },
       config: {
         // title: 'Produtos',
@@ -84,12 +88,12 @@ export default {
         HorasProdutivas: 0,
         HorasImprodutivasd: 0
       },
-      select:''
+      select: ""
     };
   },
   methods: {
-    rowClick(row){
-      alert(qs.stringify(row))
+    rowClick(row) {
+      window.location = 'atividades/Edit'
     },
     tableDataCreate(arrayAtividades) {
       let atividadesTable = [];
@@ -105,13 +109,13 @@ export default {
     },
     getAtividades(periodo) {
       let self = this;
-      let uri = !periodo ? "http://si.accist.com.br/api/Atividades_Real":
-                           "http://si.accist.com.br/api/Atividades_Real/periodo/" + periodo.replace('/','-');
+      let uri = !periodo
+        ? "http://si.accist.com.br/api/Atividades_Real"
+        : "http://si.accist.com.br/api/Atividades_Real/periodo/" +
+          periodo.replace("/", "-");
       let accessToken = LocalStorage.get.item("accessToken");
 
-      if (!accessToken) {
-        window.location = '/login'
-      };
+      if (!accessToken) window.location = "/login";
 
       let config = {
         headers: {
@@ -128,8 +132,7 @@ export default {
           self.PeriodoAtual = dataResponse.PeriodoAtual;
           self.Periodos = self.createPeriodos(dataResponse.Periodos);
           self.Totais = dataResponse.Totais;
-          if(!periodo)
-            self.select = self.PeriodoAtual
+          if (!periodo) self.select = self.PeriodoAtual;
         })
         .catch(function(errors) {
           return;
@@ -143,17 +146,18 @@ export default {
       return periodosArray;
     },
     tableClick(item) {
-      alert(JSON.stringify(item));
+      window.location = '/Edit'
     }
   },
   mounted: function() {
     let self = this;
     self.getAtividades();
   },
-  computed:{
-    periodoChange(){
+  computed: {
+    periodoChange() {
       let self = this;
-      self.getAtividades(self.select)
+      let periodo = self.select
+      if (self.select) self.getAtividades(periodo);
     }
   }
 };

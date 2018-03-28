@@ -2,10 +2,13 @@
 <q-layout class="layout"  background="secondary">
   <q-layout-container>
     <q-page padding>
-      <div float-right>
-        <q-input name="username" v-model="loginModel.username" class="inputLogin" stack-label="Email" type="email"/>
-        <q-input name="password" v-model="loginModel.password" class="inputLogin" stack-label="Senha" type="password"/>
-        <q-btn @click="login()" color="primary" class="btn-login" flat right label="Login"/>
+      <div class=" row flex-center fit">
+      <img src="assets/logoaccist320.png">
+      </div>
+      <div class = "absolute-center">
+        <q-input color="secondary" name="username" v-model="loginModel.username" class="inputLogin" stack-label="Email" type="email"/>
+        <q-input  color="secondary" name="password" v-model="loginModel.password" class="inputLogin" stack-label="Senha" type="password"/>
+        <q-btn  @click="login()" color="secondary" class="btn-login" flat right label="Login"/>
       </div>
     </q-page>
   </q-layout-container>
@@ -91,7 +94,8 @@ export default {
 
 <style lang="stylus">
 .layout {
-  padding: 50px, background = 'black';
+  padding: 20px, 
+  background = 'black';
 }
 
 .inputLogin {
@@ -101,5 +105,8 @@ export default {
 .btn-login {
   width: 100%;
   margin: 10px;
+}
+body{
+  background :'black'
 }
 </style>

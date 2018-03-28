@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-layout-header>
+    <q-layout-header :props="teste">
       <q-toolbar
         color="secondary"
 
@@ -17,7 +17,7 @@
         </q-btn>
 
         <q-toolbar-title>
-          ACCIST SI
+          {{title}}
         </q-toolbar-title>
       </q-toolbar>
     </q-layout-header>
@@ -49,11 +49,13 @@
 import { openURL, LocalStorage } from 'quasar'
 
 export default {
-  name: 'LayoutDefault',
+
   data () {
     return {
+     
       leftDrawerOpen: this.$q.platform.is.desktop,
-      title: 'Teste'
+      title: 'ACCIST SI',
+      // props: [title],
     }
   },
   methods: {
@@ -67,7 +69,12 @@ export default {
       let accessToken = LocalStorage.remove('accessToken')
       window.location = '/login'
     }
-  }
+  },
+  //mounted:function(){
+  //  //let self = this;
+  //  //props['title']= 'ACCIST SI'
+//
+  //}
 }
 </script>
 
