@@ -1,6 +1,5 @@
 <template>
   <q-page padding>
-    <h4>Atividades Realizadas</h4>
   <div>
      <q-select  
       toggle
@@ -13,7 +12,17 @@
  </div>
  <div>
  
-   <q-table 
+   <q-list>
+     <q-item>
+       <q-item-side> Data </q-item-side>
+       <q-item-main label="Projeto"/>
+        <q-item-side> Hora Inicio </q-item-side>
+     </q-item>
+     <div v-for="atividade in Atividades">
+        <itemAtividadeReal :atividadeReal="atividade"/>
+     </div>
+   </q-list>
+   <!--<q-table 
    :data="tableDataCreate(this.Atividades)" 
    :columns="columns" 
    pagination = "serverPagination"
@@ -30,21 +39,22 @@
         </q-td>
       </q-tr> 
       
-   </q-table>
+   </q-table>-->
  </div>
   </q-page>
 </template>
 
 <script>
 import axios from "axios";
-import { LocalStorage } from "quasar";
+import { LocalStorage, Loading } from "quasar";
+import itemAtividadeReal from "components/atividade_real/itemAtividadeReal";
 import qs from "qs";
 
 export default {
   data() {
     return {
       serverPagination: {
-        page:1,
+        page: 1,
         rowsNumber: 20
       },
       config: {
@@ -93,7 +103,7 @@ export default {
   },
   methods: {
     rowClick(row) {
-      window.location = 'atividades/Edit'
+      window.location = "atividades/Edit";
     },
     tableDataCreate(arrayAtividades) {
       let atividadesTable = [];
@@ -124,6 +134,8 @@ export default {
         }
       };
 
+      Loading.show();
+
       axios
         .get(uri, config)
         .then(function(response) {
@@ -137,6 +149,8 @@ export default {
         .catch(function(errors) {
           return;
         });
+
+      Loading.hide();
     },
     createPeriodos(periodos) {
       let periodosArray = [];
@@ -146,7 +160,7 @@ export default {
       return periodosArray;
     },
     tableClick(item) {
-      window.location = '/Edit'
+      window.location = "/Edit";
     }
   },
   mounted: function() {
@@ -156,13 +170,18 @@ export default {
   computed: {
     periodoChange() {
       let self = this;
-      let periodo = self.select
+      let periodo = self.select;
       if (self.select) self.getAtividades(periodo);
     }
+  },
+  components: {
+    itemAtividadeReal
+  },
+  created: function() {
+    this.$root.$emit("titulo", "Atividades Realizadas");
   }
 };
 </script>
 
 <style>
-
 </style>

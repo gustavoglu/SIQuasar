@@ -46,36 +46,39 @@
 </template>
 
 <script>
-import { openURL, LocalStorage } from 'quasar'
+import { openURL, LocalStorage } from "quasar";
 
 export default {
-
-  data () {
+  data() {
     return {
-     
       leftDrawerOpen: this.$q.platform.is.desktop,
-      title: 'ACCIST SI',
+      title: "ACCIST SI"
       // props: [title],
-    }
+    };
   },
   methods: {
     openURL,
-    getUserName(){
-        let username = LocalStorage.item.get('username')
-        if(!username) return ''
-        return 'Olá ' + username
+    getUserName() {
+      let username = LocalStorage.item.get("username");
+      if (!username) return "";
+      return "Olá " + username;
     },
-    logout(){
-      let accessToken = LocalStorage.remove('accessToken')
-      window.location = '/login'
+    logout() {
+      let accessToken = LocalStorage.remove("accessToken");
+      window.location = "/login";
     }
   },
+  created: function() {
+    this.$root.$on("titulo", titulo => {
+      this.title = titulo;
+    });
+  }
   //mounted:function(){
   //  //let self = this;
   //  //props['title']= 'ACCIST SI'
-//
+  //
   //}
-}
+};
 </script>
 
 <style>
