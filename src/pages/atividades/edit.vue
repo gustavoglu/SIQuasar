@@ -7,8 +7,10 @@
           <q-tab slot="title" name="despesas"  icon="monetization_on" >Despesas</q-tab>
           
           <q-tab-pane name="atividade">
-            <q-select class="q-pa-sm" v-model="selectProjeto" :options="projetos" :select="selectProjeto" stack-label="Projeto"/>
-            <q-select class="q-pa-sm" v-model="selectTipoAtividade" :options="tipoAtividades" :select="selectTipoAtividade" stack-label="Tipo Atividade"/>
+            <div class="row">
+            <q-select class="q-pa-sm col" v-model="selectProjeto" :options="projetos" :select="selectProjeto" stack-label="Projeto"/>
+            <q-select class="q-pa-sm col" v-model="selectTipoAtividade" :options="tipoAtividades" :select="selectTipoAtividade" stack-label="Tipo Atividade"/>
+            </div>
             <q-datetime class="q-pa-sm" v-model="data" format="DD/MM/YYYY" type="date" @change="val =>{model = val}" stack-label="Data"/>
             <div class="row">
               <q-datetime class="q-pa-sm col" v-model="horaIni" format24h  type="time" @change="val =>{model = val}" stack-label="Hora Inicio"/>
@@ -17,13 +19,13 @@
             <q-input  class="q-pa-sm" clearable v-model="tempoImprodutivo" stack-label="Tempo Improdutivo(min)" type="number" placeholder="Tempo Improdutivo"/>
             <q-input  class="q-pa-sm" clearable v-model="comentarios" stack-label="Comentarios" type="textarea" placeholder="Comentarios"/>
             <q-input  class="q-pa-sm" clearable v-model="chamadosJira" stack-label="ChamadosJira" type="textarea" placeholder="ChamadosJira"/>
-            <q-input  class="q-pa-sm" clearable v-model="descricaoAtividades"  stack-label="ChamadosJira" type="textarea" placeholder="Desc. Atividades"/>
+            <q-input  class="q-pa-sm" clearable v-model="descricaoAtividades"  stack-label="Desc. Atividades" type="textarea" placeholder="Desc. Atividades"/>
           </q-tab-pane>
           
           <q-tab-pane name="despesas">
-            <q-list>
+            <q-list separator no-border>
               <div v-for="despesa in despesas ">
-                <despesaItem :despesa="despesa" />
+                <despesaItem :despesa="despesa" :tipoDespesas="tipoDespesas" />
               </div>
             </q-list>
           </q-tab-pane>
@@ -36,7 +38,7 @@
 <script>
 import axios from "axios";
 import { LocalStorage, date, Loading } from "quasar";
-import despesaItem from "components/despesas/edit";
+import despesaItem from "components/despesas/itemDespesa";
 
 export default {
   data() {
@@ -44,6 +46,7 @@ export default {
       name: "Editar Atividade",
       projetos: [],
       tipoAtividades: [],
+      tipoDespesas : [],
       data: "",
       horaIni: "",
       horaFim: "",
@@ -88,7 +91,7 @@ export default {
     getAtividade(id) {
       Loading.show();
 
-      id = "fdd66123-30e7-4b1b-849b-ad4371ffc185";
+      id = "803b11d4-6314-4dcc-8cf5-0a2c2860bdd9";
       if (!id) return;
 
       let token = LocalStorage.get.item("accessToken");
@@ -104,7 +107,7 @@ export default {
       axios
         .get(
           "http://si.accist.com.br/api/atividades_real/" +
-            "fdd66123-30e7-4b1b-849b-ad4371ffc185",
+            "803b11d4-6314-4dcc-8cf5-0a2c2860bdd9",
           config
         )
         .then(function(response) {

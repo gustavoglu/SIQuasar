@@ -72,10 +72,15 @@ module.exports = function (ctx) {
         'QRouteTab',
         'Notify',
         'Loading',
-        'QSpinnerGears'
+        'QSpinnerGears',
+        'QModal',
+        'QCheckbox',
+        'QBtnGroup'
       ],
       directives: [
-        'Ripple'
+        'Ripple',
+        'CloseOverlay'
+
       ],
       // Quasar plugins
       plugins: [
