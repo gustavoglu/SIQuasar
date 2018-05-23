@@ -25,7 +25,7 @@
           <q-tab-pane name="despesas">
             <q-list separator no-border>
               <div v-for="despesa in despesas ">
-                <despesaItem :despesa="despesa" :tipoDespesas="tipoDespesas" />
+                <despesaItem :despesa="despesa" :tipoDespesas="tipoDespesas" :valorKm="valorKm" />
               </div>
             </q-list>
           </q-tab-pane>
@@ -58,7 +58,8 @@ export default {
       despesas: [],
       selectProjeto: "",
       selectTipoAtividade: "",
-      despesas: []
+      despesas: [],
+      valorKm : 0
     };
   },
   methods: {
@@ -87,6 +88,7 @@ export default {
       this.chamadosJira = atv.ChamadosJira;
       this.descricaoAtividades = atv.DescAtividades;
       this.despesas = atividadeModel.Despesas;
+      this.valorKm = atividadeModel.Colaborador_Parametro_Km
     },
     getAtividade(id) {
       Loading.show();

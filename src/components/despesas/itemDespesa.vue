@@ -8,7 +8,7 @@
       </q-item-side>
       </q-item>
 
-      <despesaModal :despesa="despesa" :tiposDespesa="tipoDespesas"/>
+      <despesaModal :despesa="despesa" :tiposDespesa="tipoDespesas" :valorKm="valorKm"/>
   </div>
 </template>
 
@@ -23,6 +23,9 @@ export default {
     },
     tipoDespesas:{
       type:Array
+    },
+    valorKm:{
+      type:Number
     }
   },
   data() {
