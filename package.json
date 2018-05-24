@@ -12,7 +12,8 @@
   "dependencies": {
     "axios": "^0.18.0",
     "moment": "^2.22.1",
-    "vue-moment": "^4.0.0-0"
+    "vue-moment": "^4.0.0-0",
+    "vuelidate": "^0.7.2"
   },
   "devDependencies": {
     "quasar-cli": "^0.15.12"
