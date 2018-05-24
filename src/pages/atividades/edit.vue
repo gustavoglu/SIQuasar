@@ -29,7 +29,7 @@
           <q-tab-pane name="despesas">
             <q-list separator no-border>
               <div v-for="despesa in despesas ">
-                <despesaItem :despesa="despesa" :tipoDespesas="ativiade.tipoDespesas" :valorKm="atividade.valorKm" />
+                <despesaItem :despesa="despesa" :tipoDespesas="tipoDespesas" :valorKm="atividade.valorKm" />
               </div>
             </q-list>
           </q-tab-pane>
@@ -48,54 +48,55 @@
 import axios from "axios";
 import { LocalStorage, date, Loading } from "quasar";
 import despesaItem from "components/despesas/itemDespesa";
-import {required,email} from 'vuelidate/lib/validators'
+import { required, email } from "vuelidate/lib/validators";
 
 export default {
   data() {
     return {
       name: "Editar Atividade",
-     atividade:{
-      projetos: [],
-      tipoAtividades: [],
-    
-      data: "",
-      horaIni: "",
-      horaFim: "",
-      tempoImprodutivo: 0,
-      comentarios: "",
-      chamadosJira: "",
-      descricaoAtividades: "",
-      parametroKm: 0,
-     
-      selectProjeto: "",
-      selectTipoAtividade: "",
-      valorKm : 0
-     },
+      atividade: {
+        projetos: [],
+        tipoAtividades: [],
+
+        data: "",
+        horaIni: "",
+        horaFim: "",
+        tempoImprodutivo: 0,
+        comentarios: "",
+        chamadosJira: "",
+        descricaoAtividades: "",
+        parametroKm: 0,
+
+        selectProjeto: "",
+        selectTipoAtividade: "",
+        valorKm: 0
+      },
       despesas: [],
-      tipoDespesas : [],
+      tipoDespesas: []
     };
   },
-  validations:{
-    atividade:{
-      data: {required},
-      horaIni: {required},
-      horaFim: {required},
-      descricaoAtividades: {required},
-      selectProjeto: {required},
-      selectTipoAtividade: {required},
-    },
-     
-    
+  validations: {
+    atividade: {
+      data: { required },
+      horaIni: { required },
+      horaFim: { required },
+      descricaoAtividades: { required },
+      selectProjeto: { required },
+      selectTipoAtividade: { required }
+    }
   },
   methods: {
-       salvar () {
-      this.$v.atividade.$touch()
+    salvar() {
+      this.$v.atividade.$touch();
 
       if (this.$v.atividade.$error) {
-        this.$q.notify({ message : 'Existem campos obrigatórios não preenchidos', type : 'negative'})
-        return
+        this.$q.notify({
+          message: "Existem campos obrigatórios não preenchidos",
+          type: "negative"
+        });
+        return;
       }
-       },
+    },
     setAtividade(atividadeModel) {
       let atv = atividadeModel.Atividade_Real;
 
@@ -107,20 +108,28 @@ export default {
       this.atividade.tipoAtividades = this.createTipoAtividadesSelect(
         atividadeModel.TipoAtividades
       );
-      this.atividade.projetos = this.createProjetosSelect(atividadeModel.Projetos);
+      this.atividade.projetos = this.createProjetosSelect(
+        atividadeModel.Projetos
+      );
       this.tipoDespesas = atividadeModel.TipoDespesas;
       this.atividade.parametroKm = atividadeModel.Colaborador_Parametro_Km;
       this.atividade.selectTipoAtividade = atv.Id_TipoAtividade;
       this.atividade.selectProjeto = atv.Id_Projeto;
       this.atividade.data = atv.Data;
-      this.atividade.horaIni = date.formatDate(horaIni, "YYYY-MM-DDTHH:mm:ss.SSSZ");
-      this.atividade.horaFim = date.formatDate(horaFim, "YYYY-MM-DDTHH:mm:ss.SSSZ");
+      this.atividade.horaIni = date.formatDate(
+        horaIni,
+        "YYYY-MM-DDTHH:mm:ss.SSSZ"
+      );
+      this.atividade.horaFim = date.formatDate(
+        horaFim,
+        "YYYY-MM-DDTHH:mm:ss.SSSZ"
+      );
       this.despesas = atividadeModel.Despesas;
       this.atividade.tempoImprodutivo = atv.TempoImprodutivo;
       this.atividade.comentarios = atv.Comentarios;
       this.atividade.chamadosJira = atv.ChamadosJira;
       this.atividade.descricaoAtividades = atv.DescAtividades;
-      this.atividade.valorKm = atividadeModel.Colaborador_Parametro_Km
+      this.atividade.valorKm = atividadeModel.Colaborador_Parametro_Km;
     },
     getAtividade(id) {
       Loading.show();
