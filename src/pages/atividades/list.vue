@@ -11,7 +11,7 @@
      />
  </div>
  <div>
- 
+
    <q-list>
      <q-item>
        <q-item-side> Data </q-item-side>
@@ -41,6 +41,12 @@
       
    </q-table>-->
  </div>
+  <q-page-sticky position="bottom-right" :offset="[18, 18]">
+
+      <q-btn fab color="secondary" icon="add" class="animate-pop" @click.native="novaAtividade()"/>
+
+    </q-page-sticky>
+    <novaAtividadeModal/>
   </q-page>
 </template>
 
@@ -49,6 +55,7 @@ import axios from "axios";
 import { LocalStorage, Loading } from "quasar";
 import itemAtividadeReal from "components/atividade_real/itemAtividadeReal";
 import qs from "qs";
+import novaAtividadeModal from 'components/atividade_real/modals/novaAtividadeModal'
 
 export default {
   data() {
@@ -102,6 +109,9 @@ export default {
     };
   },
   methods: {
+    novaAtividade(){
+      this.$root.$emit('abriModalNovaAtividade');
+    },
     rowClick(row) {
       window.location = "atividades/Edit";
     },
@@ -175,7 +185,8 @@ export default {
     }
   },
   components: {
-    itemAtividadeReal
+    itemAtividadeReal,
+    novaAtividadeModal
   },
   created: function() {
     this.$root.$emit("titulo", "Atividades Realizadas");

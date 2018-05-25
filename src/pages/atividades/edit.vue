@@ -3,13 +3,14 @@
       <q-layout view="lHh Lpr lFf">
         
         <q-tabs color="secondary"  align="justify" >
+          
           <q-tab default slot="title" name="atividade" icon="play_arrow" >Atividade</q-tab>
           <q-tab slot="title" name="despesas"  icon="monetization_on" >Despesas</q-tab>
           
           <q-tab-pane name="atividade">
            
             <div class="row">
-              <q-select  @blur="$v.atividade.selectProjeto.$touch" :error="$v.atividade.selectProjeto.$error"  class="q-pa-sm col" v-model="atividade.selectProjeto" :options="atividade.projetos" :select="atividade.selectProjeto" stack-label="Projeto"/>
+              <q-select @blur="$v.atividade.selectProjeto.$touch" :error="$v.atividade.selectProjeto.$error"  class="q-pa-sm col" v-model="atividade.selectProjeto" :options="atividade.projetos" :select="atividade.selectProjeto" stack-label="Projeto"/>
               <q-select @blur="$v.atividade.selectTipoAtividade.$touch" :error="$v.atividade.selectTipoAtividade.$error"  class="q-pa-sm col" v-model="atividade.selectTipoAtividade" :options="atividade.tipoAtividades" :select="atividade.selectTipoAtividade" stack-label="Tipo Atividade"/>
             </div>
            
@@ -22,32 +23,37 @@
            
             <q-input  class="q-pa-sm" clearable v-model="atividade.tempoImprodutivo" stack-label="Tempo Improdutivo(min)" type="number" placeholder="Tempo Improdutivo"/>
             <q-input  class="q-pa-sm" clearable v-model="atividade.comentarios" stack-label="Comentarios" type="textarea" placeholder="Comentarios"/>
-            <q-input   class="q-pa-sm" clearable v-model="atividade.chamadosJira" stack-label="ChamadosJira" type="textarea" placeholder="ChamadosJira"/>
-            <q-input   @blur="$v.atividade.descricaoAtividades.$touch"  :error="$v.atividade.descricaoAtividades.$error" class="q-pa-sm" clearable v-model="atividade.descricaoAtividades"  stack-label="Desc. Atividades" type="textarea" placeholder="Desc. Atividades"/>
+            <q-input  class="q-pa-sm" clearable v-model="atividade.chamadosJira" stack-label="ChamadosJira" type="textarea" placeholder="ChamadosJira"/>
+            <q-input  @blur="$v.atividade.descricaoAtividades.$touch"  :error="$v.atividade.descricaoAtividades.$error" class="q-pa-sm" clearable v-model="atividade.descricaoAtividades"  stack-label="Desc. Atividades" type="textarea" placeholder="Desc. Atividades"/>
+          
           </q-tab-pane>
           
           <q-tab-pane name="despesas">
   
             <q-layout>
               
-              <q-btn label="Nova Despesa" color="secondary" @click.native="novaDespesa"></q-btn>
+              <q-btn label="Nova Despesa" color="secondary" @click.native="addNovaDespesa"></q-btn>
               <q-list separator no-border>
                 <div v-for="despesa in despesas ">
                   <despesaItem :despesa="despesa" :tipoDespesas="tipoDespesas" :valorKm="atividade.valorKm" @atualizaDespesa="atualizaDespesa($event)"  @excluiDespesa="excluiDespesa($event)"/>
                 </div>
               </q-list>
+
+              <despesaModal :despesa="novaDespesa" :tiposDespesa="tipoDespesas" :valorKm="atividade.valorKm" @atualizaDespesa="atualizaDespesa($event)" @addNovaDespesa="addNovaDespesaSalva($event)" />
            
             </q-layout>
     
           </q-tab-pane>
-
           
         </q-tabs>
+
         <q-layout-footer>
           <q-toolbar color="secondary">
+            
             <q-btn  flat label="Salvar" @click.native="salvar"/>
           </q-toolbar>
         </q-layout-footer>
+      
        </q-layout>
 
    </q-page>
@@ -64,16 +70,8 @@ export default {
   data() {
     return {
       name: "Editar Atividade",
-      novaDespesa :{
-        Comentarios: null,
-        Valor: null,
-        NaoReembolsar: false,
-        Km: null,
-        UseiMeuCarro: false,
-        Id_TipoDespesa: null,
-        Id_Projeto: null,
-        Id_Atividade: this.atividade.Id,
-      },
+      despesas: [],
+      tipoDespesas: [],
       atividade: {
         Id : null,
         projetos: [],
@@ -88,11 +86,24 @@ export default {
         parametroKm: 0,
         selectProjeto: "",
         selectTipoAtividade: "",
+        id_Colaborador: '',
         valorKm: 0
       },
-      despesas: [],
-      tipoDespesas: []
-    };
+
+   
+      novaDespesa :{
+        Id:'',
+        Comentarios: '',
+        Valor: 0,
+        NaoReembolsar: false,
+        Km: 0,
+        UseiMeuCarro: true,
+        Id_TipoDespesa: '',
+        Id_Projeto: '',
+        Id_Atividade: '',
+        Id_Colaborador : ''
+      }, 
+  }
   },
   validations: {
     atividade: {
@@ -105,6 +116,17 @@ export default {
     }
   },
   methods: {
+    addNovaDespesa(){
+      if(this.atividade.Id){
+        this.novaDespesa.Id_Projeto = this.atividade.selectProjeto
+        this.novaDespesa.Id_Atividade = this.atividade.Id
+        this.novaDespesa.Id_Colaborador = this.atividade.id_Colaborador
+      }
+      this.$root.$emit('abriModalDespesa',this.novaDespesa)
+    },
+    addNovaDespesaSalva(despesa){
+      this.despesas.push(despesa)
+    },
     salvar() {
       this.$v.atividade.$touch();
 
@@ -115,6 +137,54 @@ export default {
         });
         return;
       }
+
+      this.atualizaAtividade();
+    },
+    atualizaAtividade(){
+      let atividade = {
+        Id:this.atividade.Id,
+        Data: this.atividade.data,
+        HoraInicio: date.formatDate (this.atividade.horaIni,'HH:mm:ss'),
+        HoraFim: date.formatDate (this.atividade.horaFim,'HH:mm:ss'),
+        TempoImprodutivo: this.atividade.tempoImprodutivo,
+        Comentarios: this.atividade.comentarios,
+        ChamadosJira: this.atividade.chamadosJira,
+        Id_Projeto: this.atividade.selectProjeto,
+        Id_Colaborador : this.atividade.id_Colaborador,
+        Id_TipoAtividade: this.atividade.selectTipoAtividade,
+        DescAtividades: this.atividade.descricaoAtividades,
+      }
+      
+      let token = LocalStorage.get.item("accessToken");
+      if (!token) window.location = "/login";
+      let config = {
+        headers: {
+          Authorization: "bearer " + token,
+          "content-type": "application/json"
+        }
+      };
+
+      Loading.show()
+
+        axios.put(
+          "http://si.accist.com.br/api/atividades_real/",
+          atividade,
+          config
+        )
+        .then(response => {
+          this.$emit("atividadeAtualizada", response.data);
+          Loading.hide();
+          this.open = false;
+          this.$q.notify({ type: "positive", message: "Atividade Atualizada" });
+        })
+        .catch(error => {
+          Loading.hide();
+          this.$q.notify({
+            type: "negative",
+            message: "Algo deu errado ao tentar Atualizar a Atividade " + error
+          });
+        });
+
     },
     atualizaDespesa(despesa){
       this.despesas.forEach(d =>{
@@ -133,14 +203,10 @@ export default {
     setAtividade(atividadeModel) {
       let atv = atividadeModel.Atividade_Real;
 
-      let horaIni =
-        "" + atv.Data.toString().replace("00:00:00", "") + atv.HoraInicio;
-      let horaFim =
-        "" + atv.Data.toString().replace("00:00:00", "") + atv.HoraFim;
+      let horaIni = "" + atv.Data.toString().replace("00:00:00", "") + atv.HoraInicio;
+      let horaFim = "" + atv.Data.toString().replace("00:00:00", "") + atv.HoraFim;
 
-      this.atividade.tipoAtividades = this.createTipoAtividadesSelect(
-        atividadeModel.TipoAtividades
-      );
+      this.atividade.tipoAtividades = this.createTipoAtividadesSelect( atividadeModel.TipoAtividades);
       this.atividade.projetos = this.createProjetosSelect(
         atividadeModel.Projetos
       );
@@ -151,11 +217,11 @@ export default {
       this.atividade.selectProjeto = atv.Id_Projeto;
       this.atividade.data = atv.Data;
       this.atividade.horaIni = date.formatDate(
-        horaIni,
+        atv.HoraInicio,
         "YYYY-MM-DDTHH:mm:ss.SSSZ"
       );
       this.atividade.horaFim = date.formatDate(
-        horaFim,
+        atv.HoraFim,
         "YYYY-MM-DDTHH:mm:ss.SSSZ"
       );
       this.despesas = atividadeModel.Despesas;
@@ -164,6 +230,7 @@ export default {
       this.atividade.chamadosJira = atv.ChamadosJira;
       this.atividade.descricaoAtividades = atv.DescAtividades;
       this.atividade.valorKm = atividadeModel.Colaborador_Parametro_Km;
+      this.atividade.id_Colaborador = atv.Id_Colaborador
     },
     getAtividade(id) {
       Loading.show();

@@ -75,7 +75,9 @@ module.exports = function (ctx) {
         'QSpinnerGears',
         'QModal',
         'QCheckbox',
-        'QBtnGroup'
+        'QBtnGroup',
+        'QPageSticky'
+
       ],
       directives: [
         'Ripple',
