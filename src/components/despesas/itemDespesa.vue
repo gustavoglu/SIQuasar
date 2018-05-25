@@ -8,7 +8,7 @@
       </q-item-side>
       </q-item>
 
-      <despesaModal :despesa="despesa" :tiposDespesa="tipoDespesas" :valorKm="valorKm"/>
+      <despesaModal :despesa="despesa" :tiposDespesa="tipoDespesas" :valorKm="valorKm" @atualizaDespesa="atualizaDespesa($event)" @excluiDespesa="excluiDespesa($event)"/>
   </div>
 </template>
 
@@ -39,7 +39,13 @@ export default {
       this.$root.$emit('abriModalDespesa',this.despesa);
     },
       
-
+  atualizaDespesa(despesa){
+    Object.assign(this.despesa,despesa)
+    this.$emit('atualizaDespesa',despesa)
+  },
+  excluiDespesa(despesa){
+    this.$emit('excluiDespesa',despesa)
+  }
   },
   filters: {
     formatDecimal(value) {

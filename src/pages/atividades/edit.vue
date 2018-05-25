@@ -27,13 +27,21 @@
           </q-tab-pane>
           
           <q-tab-pane name="despesas">
-            <q-list separator no-border>
-              <div v-for="despesa in despesas ">
-                <despesaItem :despesa="despesa" :tipoDespesas="tipoDespesas" :valorKm="atividade.valorKm" />
-              </div>
-            </q-list>
+  
+            <q-layout>
+              
+              <q-btn label="Nova Despesa" color="secondary" @click.native="novaDespesa"></q-btn>
+              <q-list separator no-border>
+                <div v-for="despesa in despesas ">
+                  <despesaItem :despesa="despesa" :tipoDespesas="tipoDespesas" :valorKm="atividade.valorKm" @atualizaDespesa="atualizaDespesa($event)"  @excluiDespesa="excluiDespesa($event)"/>
+                </div>
+              </q-list>
+           
+            </q-layout>
+    
           </q-tab-pane>
-        
+
+          
         </q-tabs>
         <q-layout-footer>
           <q-toolbar color="secondary">
@@ -41,6 +49,7 @@
           </q-toolbar>
         </q-layout-footer>
        </q-layout>
+
    </q-page>
 </template>
 
@@ -49,15 +58,26 @@ import axios from "axios";
 import { LocalStorage, date, Loading } from "quasar";
 import despesaItem from "components/despesas/itemDespesa";
 import { required, email } from "vuelidate/lib/validators";
+import despesaModal from 'components/despesas/modals/modalDespesa'
 
 export default {
   data() {
     return {
       name: "Editar Atividade",
+      novaDespesa :{
+        Comentarios: null,
+        Valor: null,
+        NaoReembolsar: false,
+        Km: null,
+        UseiMeuCarro: false,
+        Id_TipoDespesa: null,
+        Id_Projeto: null,
+        Id_Atividade: this.atividade.Id,
+      },
       atividade: {
+        Id : null,
         projetos: [],
         tipoAtividades: [],
-
         data: "",
         horaIni: "",
         horaFim: "",
@@ -66,7 +86,6 @@ export default {
         chamadosJira: "",
         descricaoAtividades: "",
         parametroKm: 0,
-
         selectProjeto: "",
         selectTipoAtividade: "",
         valorKm: 0
@@ -97,6 +116,20 @@ export default {
         return;
       }
     },
+    atualizaDespesa(despesa){
+      this.despesas.forEach(d =>{
+        if(d.Id == despesa.Id)
+          d = despesa
+      })
+    },
+    excluiDespesa(despesa){
+      
+      let despesaParaExcluir = {};
+      this.despesas.forEach(d => { if(d.Id == despesa.Id) despesaParaExcluir = d; })
+
+      let index = this.despesas.indexOf(despesaParaExcluir)
+      if(index >= 0) this.despesas.splice(index,1)
+    },
     setAtividade(atividadeModel) {
       let atv = atividadeModel.Atividade_Real;
 
@@ -111,6 +144,7 @@ export default {
       this.atividade.projetos = this.createProjetosSelect(
         atividadeModel.Projetos
       );
+      this.atividade.Id = atv.Id
       this.tipoDespesas = atividadeModel.TipoDespesas;
       this.atividade.parametroKm = atividadeModel.Colaborador_Parametro_Km;
       this.atividade.selectTipoAtividade = atv.Id_TipoAtividade;
@@ -150,7 +184,7 @@ export default {
       axios
         .get(
           "http://si.accist.com.br/api/atividades_real/" +
-            "803b11d4-6314-4dcc-8cf5-0a2c2860bdd9",
+            "63ea2d52-e264-4326-9e32-a741ac7caa71",
           config
         )
         .then(function(response) {
@@ -190,10 +224,14 @@ export default {
     }
   },
   components: {
-    despesaItem
+    despesaItem,
+    despesaModal
   },
   mounted: function() {
     this.getAtividade("teste");
+  },
+  created:()=>{
+    
   }
 
   // name: 'PageName',

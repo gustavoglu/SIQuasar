@@ -88,6 +88,7 @@ module.exports = function (ctx) {
         'LocalStorage',
         'SessionStorage',
         'Loading',
+        'Dialog'
 
       ]
     },
