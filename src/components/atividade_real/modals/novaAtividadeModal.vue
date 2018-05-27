@@ -7,7 +7,7 @@
            <q-btn flat icon="close" @click.native="fechaModal"></q-btn>
          </q-toolbar>
         
-        <q-tabs color="secondary"  align="justify" >
+        <q-tabs v-model="selectedTab" color="secondary" align="justify" >
           
           <q-tab default slot="title" name="atividade" icon="play_arrow" >Atividade</q-tab>
           <q-tab slot="title" name="despesas"  icon="monetization_on" >Despesas</q-tab>
@@ -24,28 +24,40 @@
             <div class="row">
               <q-datetime :error="$v.atividadeNova.HoraInicio.$error"  class="q-pa-sm col" v-model="atividadeNova.HoraInicio" format24h  type="time" @change="val =>{model = val}" stack-label="Hora Inicio"/>
               <q-datetime :error="$v.atividadeNova.HoraFim.$error"   class="q-pa-sm col" v-model="atividadeNova.HoraFim" format24h type="time" @change="val =>{model = val}" stack-label="HoraFim"/>
-            <q-input  class="q-pa-sm col" clearable v-model="atividadeNova.TempoImprodutivo" stack-label="Almoço(min)" type="number" placeholder="Almoço(min)"/>
+            <q-input class="q-pa-sm col" clearable v-model="atividadeNova.TempoImprodutivo" stack-label="Almoço(min)" type="number" placeholder="Almoço(min)"/>
             </div>
-           
       
             <q-input  class="q-pa-sm" clearable v-model="atividadeNova.Comentarios" stack-label="Comentarios" type="textarea" placeholder="Comentarios"/>
             <q-input  class="q-pa-sm" clearable v-model="atividadeNova.ChamadosJira" stack-label="ChamadosJira" type="textarea" placeholder="ChamadosJira"/>
-            <q-input   :error="$v.atividadeNova.DescAtividades.$error" class="q-pa-sm" clearable v-model="atividadeNova.DescAtividades"  stack-label="Desc. Atividades" type="textarea" placeholder="Desc. Atividades"/>
+            <q-input  :error="$v.atividadeNova.DescAtividades.$error" class="q-pa-sm" clearable v-model="atividadeNova.DescAtividades"  stack-label="Desc. Atividades" type="textarea" placeholder="Desc. Atividades"/>
           
           </q-tab-pane>
           
           <q-tab-pane name="despesas">
-  
+             <q-btn fab color="secondary" icon="add" class="animate-pop" @click.native="addNovaDespesa"/>     
+            <q-page-sticky position="bottom-right" :offset="[30, 30]">
+
+            </q-page-sticky>
+            
             <q-layout>
+
+              <q-item class="fixed-center" v-if="!despesas || despesas.length == 0">
+                <q-item-main sublabel="Nenhuma Despesa Aqui"/>
+              </q-item>
               
-              <q-btn label="Nova Despesa" color="secondary" @click.native="addNovaDespesa"></q-btn>
-              <q-list separator no-border>
-                <!--<div v-for="despesa in despesas ">
-                  <despesaItem :despesa="despesa" :tipoDespesas="tiposDespesa" :valorKm="atividade.valorKm" />
-                </div>-->
+              <q-list v-if="despesas || despesas.length > 0" separator no-border>
+                <div v-for="despesa in despesas">
+                  <itemDespesaOffline :despesa="despesa" :tipoDespesas="tiposDespesa" :valorKm="valorKm" 
+                    @atualizaNovaDespesaOffline="atualizaNovaDespesaOffline($event)" 
+                    @salvaNovaDespesaOffline="salvaNovaDespesaOffline($event)"
+                    @excluiDespesaOffline="excluiDespesaOffline($event)" /> 
+                </div>
               </q-list>
 
-              <!--<despesaModal :despesa="novaDespesa" :tiposDespesa="tiposDespesa" :valorKm="valorKm" />-->
+              <modalDespesaOffline :tiposDespesa="tiposDespesa" :valorKm="valorKm" 
+                @atualizaNovaDespesaOffline="atualizaNovaDespesaOffline($event)" 
+                @salvaNovaDespesaOffline="salvaNovaDespesaOffline($event)" 
+                @excluiDespesaOffline="excluiDespesaOffline($event)" />
            
             </q-layout>
     
@@ -76,9 +88,12 @@ import moment from "moment";
 import axios from "axios";
 import { required, email } from "vuelidate/lib/validators";
 import { date, LocalStorage, Loading } from "quasar";
+import modalDespesaOffline from "components/despesas/modals/modalDespesaOffline";
+import itemDespesaOffline from "components/despesas/itemDespesaOffline";
 export default {
   data() {
     return {
+      selectedTab: 'atividade',
       open: false,
       atividadeLimpa: {},
       atividadeNova: {
@@ -110,6 +125,10 @@ export default {
       Id_Projeto: { required }
     }
   },
+  components: {
+    modalDespesaOffline,
+    itemDespesaOffline
+  },
   computed: {
     tiposDespesaSelect() {
       var tiposDespesaSelect = [];
@@ -137,6 +156,37 @@ export default {
     }
   },
   methods: {
+
+    excluiDespesaOffline(despesa){
+      if(despesa){
+        let despesaExcluida = {}
+        this.despesas.forEach(d =>{
+          if(d.Id == despesa.Id)
+          despesaExcluida = d;
+        })
+
+        let index = this.despesas.indexOf(despesaExcluida)
+        this.despesas.splice(index,1)
+
+      }
+
+    },
+    atualizaNovaDespesaOffline(despesa) {
+      let despesaParaAtualizar = {};
+      this.despesas.forEach(d => {
+        if (d.Id == despesa.Id) Object.assign(d, despesa);
+      });
+    },
+    salvaNovaDespesaOffline(despesa) {
+      let despesaNovaObj = {};
+      if (despesa) {
+        Object.assign(despesaNovaObj, despesa);
+        this.despesas.push(despesaNovaObj);
+      }
+    },
+    addNovaDespesa() {
+      this.$root.$emit("abriModalDespesaOffline");
+    },
     createSelectModel(label, value) {
       return { label: label, value: value };
     },
@@ -146,7 +196,8 @@ export default {
     salvar() {},
     fechaModal() {
       this.open = false;
-      Object.assign(this.atividadeNova,this.atividadeLimpa)
+      Object.assign(this.atividadeNova, this.atividadeLimpa);
+    
     },
     getInfos() {
       Loading.show();
@@ -174,6 +225,7 @@ export default {
         })
         .catch(error => {
           Loading.hide();
+          this.open = false;
           this.$q.notify({
             type: "negative",
             message:
@@ -190,13 +242,13 @@ export default {
     }
   },
   created: function() {
-
-    Object.assign(this.atividadeLimpa,this.atividadeNova)
+    Object.assign(this.atividadeLimpa, this.atividadeNova);
     this.$root.$on("abriModalNovaAtividade", () => {
-      Object.assign(this.atividadeNova,this.atividadeLimpa)
+      Object.assign(this.atividadeNova, this.atividadeLimpa);
+      this.selectedTab= 'atividade'
       this.open = true;
       this.getInfos();
-
+      this.despesas =[]
     });
     //this.getInfos();
   }

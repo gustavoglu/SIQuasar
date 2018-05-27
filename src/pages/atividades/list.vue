@@ -22,6 +22,7 @@
         <itemAtividadeReal :atividadeReal="atividade"/>
      </div>
    </q-list>
+   <editAtividadeModal />
    <!--<q-table 
    :data="tableDataCreate(this.Atividades)" 
    :columns="columns" 
@@ -56,6 +57,7 @@ import { LocalStorage, Loading } from "quasar";
 import itemAtividadeReal from "components/atividade_real/itemAtividadeReal";
 import qs from "qs";
 import novaAtividadeModal from 'components/atividade_real/modals/novaAtividadeModal'
+import editAtividadeModal from 'components/atividade_real/modals/editAtividadeModal'
 
 export default {
   data() {
@@ -186,7 +188,8 @@ export default {
   },
   components: {
     itemAtividadeReal,
-    novaAtividadeModal
+    novaAtividadeModal,
+    editAtividadeModal
   },
   created: function() {
     this.$root.$emit("titulo", "Atividades Realizadas");

@@ -1,8 +1,13 @@
 <template>
-    <q-page>
+  <div>
+    <q-modal v-model="open" maximized>
       <q-layout view="lHh Lpr lFf">
+        <q-toolbar color="secondary">
+           <q-toolbar-title>Editar Atividade</q-toolbar-title>
+           <q-btn flat icon="close" @click.native="fechaModal"></q-btn>
+         </q-toolbar>
         
-        <q-tabs color="secondary"  align="justify" >
+        <q-tabs color="secondary"  align="justify" v-model="selectedTab">
           
           <q-tab default slot="title" name="atividade" icon="play_arrow" >Atividade</q-tab>
           <q-tab slot="title" name="despesas"  icon="monetization_on" >Despesas</q-tab>
@@ -19,9 +24,9 @@
             <div class="row">
               <q-datetime @blur="$v.atividade.horaIni.$touch" :error="$v.atividade.horaIni.$error"  class="q-pa-sm col" v-model="atividade.horaIni" format24h  type="time" @change="val =>{model = val}" stack-label="Hora Inicio"/>
               <q-datetime @blur="$v.atividade.horaFim.$touch" :error="$v.atividade.horaFim.$error"   class="q-pa-sm col" v-model="atividade.horaFim" format24h type="time" @change="val =>{model = val}" stack-label="HoraFim"/>
+              <q-input  class="q-pa-sm" clearable v-model="atividade.tempoImprodutivo" stack-label="Almoço(min)" type="number" placeholder="Almoço"/>
             </div>
            
-            <q-input  class="q-pa-sm" clearable v-model="atividade.tempoImprodutivo" stack-label="Tempo Improdutivo(min)" type="number" placeholder="Tempo Improdutivo"/>
             <q-input  class="q-pa-sm" clearable v-model="atividade.comentarios" stack-label="Comentarios" type="textarea" placeholder="Comentarios"/>
             <q-input  class="q-pa-sm" clearable v-model="atividade.chamadosJira" stack-label="ChamadosJira" type="textarea" placeholder="ChamadosJira"/>
             <q-input  @blur="$v.atividade.descricaoAtividades.$touch"  :error="$v.atividade.descricaoAtividades.$error" class="q-pa-sm" clearable v-model="atividade.descricaoAtividades"  stack-label="Desc. Atividades" type="textarea" placeholder="Desc. Atividades"/>
@@ -33,13 +38,21 @@
             <q-layout>
               
               <q-btn label="Nova Despesa" color="secondary" @click.native="addNovaDespesa"></q-btn>
-              <q-list separator no-border>
+              <q-item class="fixed-center" v-if="!despesas || despesas.length == 0">
+                <q-item-main sublabel="Nenhuma Despesa Aqui"/>
+              </q-item>
+
+              <q-list  v-if="despesas || despesas.length > 0" separator no-border>
                 <div v-for="despesa in despesas ">
-                  <despesaItem :despesa="despesa" :tipoDespesas="tipoDespesas" :valorKm="atividade.valorKm" @atualizaDespesa="atualizaDespesa($event)"  @excluiDespesa="excluiDespesa($event)"/>
+                  <despesaItem :despesa="despesa" :tipoDespesas="tipoDespesas" :valorKm="atividade.valorKm" 
+                  @atualizaDespesa="atualizaDespesa($event)"  
+                  @excluiDespesa="excluiDespesa($event)"/>
                 </div>
               </q-list>
 
-              <despesaModal :despesa="novaDespesa" :tiposDespesa="tipoDespesas" :valorKm="atividade.valorKm" @atualizaDespesa="atualizaDespesa($event)" @addNovaDespesa="addNovaDespesaSalva($event)" />
+              <despesaModal :despesa="novaDespesa" :tiposDespesa="tipoDespesas" :valorKm="atividade.valorKm" 
+              @atualizaDespesa="atualizaDespesa($event)" 
+              @addNovaDespesa="addNovaDespesaSalva($event)" />
            
             </q-layout>
     
@@ -55,8 +68,9 @@
         </q-layout-footer>
       
        </q-layout>
+    </q-modal>
 
-   </q-page>
+  </div>
 </template>
 
 <script>
@@ -70,6 +84,8 @@ export default {
   data() {
     return {
       name: "Editar Atividade",
+      open : false,
+      selectedTab:'atividade',
       despesas: [],
       tipoDespesas: [],
       atividade: {
@@ -89,8 +105,6 @@ export default {
         id_Colaborador: '',
         valorKm: 0
       },
-
-   
       novaDespesa :{
         Id:'',
         Comentarios: '',
@@ -116,6 +130,10 @@ export default {
     }
   },
   methods: {
+    fechaModal(){
+      this.open = false
+      this.selectedTab='atividade'
+    },
     addNovaDespesa(){
       if(this.atividade.Id){
         this.novaDespesa.Id_Projeto = this.atividade.selectProjeto
@@ -234,8 +252,6 @@ export default {
     },
     getAtividade(id) {
       Loading.show();
-
-      id = "803b11d4-6314-4dcc-8cf5-0a2c2860bdd9";
       if (!id) return;
 
       let token = LocalStorage.get.item("accessToken");
@@ -251,7 +267,7 @@ export default {
       axios
         .get(
           "http://localhost:53084/api/atividades_real/" +
-            "63ea2d52-e264-4326-9e32-a741ac7caa71",
+            id,
           config
         )
         .then(function(response) {
@@ -295,13 +311,15 @@ export default {
     despesaModal
   },
   mounted: function() {
-    this.getAtividade("teste");
+  
   },
-  created:()=>{
-    
+  created:function(){
+    this.$root.$on('abriModalEditAtividade',id=>{
+      if(!id) return
+      this.open = true
+      this.getAtividade(id);
+    })
   }
-
-  // name: 'PageName',
 };
 </script>
 

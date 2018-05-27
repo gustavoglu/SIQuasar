@@ -35,7 +35,7 @@ export default {
   },
   methods: {
     clickItem() {
-      this.$emit("clickItem", this.atividadeReal);
+      this.$root.$emit("abriModalEditAtividade", this.atividadeReal.Id);
     }
   },
   filters: {
