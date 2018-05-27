@@ -1,9 +1,9 @@
 <template>
 <q-layout class="layout"  background="secondary">
   <q-layout-container>
-    <q-page padding>
+    <q-page padding class="q-pa-sm">
       <div class=" row flex-center fit">
-      <img src="assets/logoaccist320.png">
+        <img src="assets/logoaccist320.png">
       </div>
       <div>
         <q-input color="secondary" name="username" v-model="loginModel.username" class="inputLogin" stack-label="Email" type="email"/>
@@ -42,7 +42,7 @@ export default {
   },
   methods: {
     login() {
-
+      Loading.show()
       let self = this;
       let uri = "http://si.accist.com.br/token";
 
@@ -69,7 +69,7 @@ export default {
           LocalStorage.set("accessToken", access_token);
 
           window.location = "/atividades";
-          //Loading.hide();
+          Loading.hide();
         })
         .catch(function(error) {
           let notify = {
@@ -80,7 +80,7 @@ export default {
 
           Notify.create(notify);
 
-          //Loading.hide();
+          Loading.hide();
         });
     },
     loading(show) {

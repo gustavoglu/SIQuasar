@@ -13,31 +13,32 @@
           <q-tab slot="title" name="despesas"  icon="monetization_on" >Despesas</q-tab>
           
           <q-tab-pane name="atividade">
-           
-            <div class="row">
-              <q-select @blur="$v.atividade.selectProjeto.$touch" :error="$v.atividade.selectProjeto.$error"  class="q-pa-sm col" v-model="atividade.selectProjeto" :options="atividade.projetos" :select="atividade.selectProjeto" stack-label="Projeto"/>
-              <q-select @blur="$v.atividade.selectTipoAtividade.$touch" :error="$v.atividade.selectTipoAtividade.$error"  class="q-pa-sm col" v-model="atividade.selectTipoAtividade" :options="atividade.tipoAtividades" :select="atividade.selectTipoAtividade" stack-label="Tipo Atividade"/>
-            </div>
-           
-            <q-datetime class="q-pa-sm" v-model="atividade.data" format="DD/MM/YYYY" type="date" @change="val =>{model = val}" stack-label="Data"/>
-           
-            <div class="row">
-              <q-datetime @blur="$v.atividade.horaIni.$touch" :error="$v.atividade.horaIni.$error"  class="q-pa-sm col" v-model="atividade.horaIni" format24h  type="time" @change="val =>{model = val}" stack-label="Hora Inicio"/>
-              <q-datetime @blur="$v.atividade.horaFim.$touch" :error="$v.atividade.horaFim.$error"   class="q-pa-sm col" v-model="atividade.horaFim" format24h type="time" @change="val =>{model = val}" stack-label="HoraFim"/>
-              <q-input  class="q-pa-sm" clearable v-model="atividade.tempoImprodutivo" stack-label="Almoço(min)" type="number" placeholder="Almoço"/>
-            </div>
-           
-            <q-input  class="q-pa-sm" clearable v-model="atividade.comentarios" stack-label="Comentarios" type="textarea" placeholder="Comentarios"/>
-            <q-input  class="q-pa-sm" clearable v-model="atividade.chamadosJira" stack-label="ChamadosJira" type="textarea" placeholder="ChamadosJira"/>
-            <q-input  @blur="$v.atividade.descricaoAtividades.$touch"  :error="$v.atividade.descricaoAtividades.$error" class="q-pa-sm" clearable v-model="atividade.descricaoAtividades"  stack-label="Desc. Atividades" type="textarea" placeholder="Desc. Atividades"/>
-          
+            <q-layout>
+              <div class="row">
+                <q-select @blur="$v.atividade.selectProjeto.$touch" :error="$v.atividade.selectProjeto.$error"  class="q-pa-sm col" v-model="atividade.selectProjeto" :options="atividade.projetos" :select="atividade.selectProjeto" stack-label="Projeto"/>
+                <q-select @blur="$v.atividade.selectTipoAtividade.$touch" :error="$v.atividade.selectTipoAtividade.$error"  class="q-pa-sm col" v-model="atividade.selectTipoAtividade" :options="atividade.tipoAtividades" :select="atividade.selectTipoAtividade" stack-label="Tipo Atividade"/>
+              </div>
+
+              <q-datetime class="q-pa-sm" v-model="atividade.data" format="DD/MM/YYYY" type="date" @change="val =>{model = val}" stack-label="Data"/>
+
+              <div class="row">
+                <q-datetime @blur="$v.atividade.horaIni.$touch" :error="$v.atividade.horaIni.$error"  class="q-pa-sm col" v-model="atividade.horaIni" format24h  type="time" @change="val =>{model = val}" stack-label="Hora Inicio"/>
+                <q-datetime @blur="$v.atividade.horaFim.$touch" :error="$v.atividade.horaFim.$error"   class="q-pa-sm col" v-model="atividade.horaFim" format24h type="time" @change="val =>{model = val}" stack-label="HoraFim"/>
+                <q-input  class="q-pa-sm" clearable v-model="atividade.tempoImprodutivo" stack-label="Almoço(min)" type="number" placeholder="Almoço"/>
+              </div>
+
+              <q-input  class="q-pa-sm" clearable v-model="atividade.comentarios" stack-label="Comentarios" type="textarea" placeholder="Comentarios"/>
+              <q-input  class="q-pa-sm" clearable v-model="atividade.chamadosJira" stack-label="ChamadosJira" type="textarea" placeholder="ChamadosJira"/>
+              <q-input  @blur="$v.atividade.descricaoAtividades.$touch"  :error="$v.atividade.descricaoAtividades.$error" class="q-pa-sm" clearable v-model="atividade.descricaoAtividades"  stack-label="Desc. Atividades" type="textarea" placeholder="Desc. Atividades"/>
+            </q-layout>
           </q-tab-pane>
           
           <q-tab-pane name="despesas">
   
             <q-layout>
-              
-              <q-btn label="Nova Despesa" color="secondary" @click.native="addNovaDespesa"></q-btn>
+              <q-page-sticky position="bottom-right" :offset="[30, 60]">
+                <q-btn fab color="secondary" icon="add" class="animate-pop" @click.native="addNovaDespesa"/>  
+              </q-page-sticky>
               <q-item class="fixed-center" v-if="!despesas || despesas.length == 0">
                 <q-item-main sublabel="Nenhuma Despesa Aqui"/>
               </q-item>
@@ -249,6 +250,8 @@ export default {
       this.atividade.descricaoAtividades = atv.DescAtividades;
       this.atividade.valorKm = atividadeModel.Colaborador_Parametro_Km;
       this.atividade.id_Colaborador = atv.Id_Colaborador
+
+      this.$v.atividade.$touch();
     },
     getAtividade(id) {
       Loading.show();

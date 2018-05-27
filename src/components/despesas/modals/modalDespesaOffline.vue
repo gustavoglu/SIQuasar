@@ -141,11 +141,7 @@ export default {
         .catch(() => {});
     },
     despesaNovaNaoKm() {
-      if (
-        !this.despesaMutavel.Id &&
-        this.despesaMutavel.Id_TipoDespesa !=
-          "e6eb1d20-b62f-41c9-879d-c7f53f973d27"
-      ) {
+      if (this.despesaMutavel.Id_TipoDespesa != "e6eb1d20-b62f-41c9-879d-c7f53f973d27") {
         this.despesaMutavel.Km = null;
         this.despesaMutavel.UseiMeuCarro = false;
       }

@@ -1,23 +1,25 @@
 <template>
-  <q-page padding>
+  <q-page class="q-pa-lg">
   <div>
-     <q-select  
-      toggle
-      v-model="select" 
-      :options="Periodos"
-      :selected = "PeriodoAtual" 
-      :change="periodoChange"
-      float-label = "Periodo"
-     />
+     <q-select  toggle v-model="select"  :options="Periodos" :selected = "PeriodoAtual"  :change="periodoChange" float-label="Periodo"/>
+ </div>
+ <div class="row">
+   <q-item class="col">
+    <q-item-tile  color="secondary" icon="monetization_on"/>
+     <q-item-tile color="secondary"> {{'R$ '+ Totais.TotalDespesas.toFixed(2)}}</q-item-tile>
+   </q-item>
+     <q-item class="col">
+      <q-item-tile color="secondary" icon="play_arrow"/>
+     <q-item-tile color="secondary"> {{Totais.HorasProdutivas.toFixed(2) + ' Horas'}} </q-item-tile>
+   </q-item>
+     <q-item class="col">
+      <q-item-tile  color="secondary" icon="stop"/>
+     <q-item-tile  color="secondary" > {{Totais.HorasImprodutivasd.toFixed(2) + ' Horas'}}</q-item-tile>
+   </q-item>
  </div>
  <div>
 
    <q-list>
-     <q-item>
-       <q-item-side> Data </q-item-side>
-       <q-item-main label="Projeto"/>
-        <q-item-side> Hora Inicio </q-item-side>
-     </q-item>
      <div v-for="atividade in Atividades">
         <itemAtividadeReal :atividadeReal="atividade"/>
      </div>
@@ -47,7 +49,7 @@
       <q-btn fab color="secondary" icon="add" class="animate-pop" @click.native="novaAtividade()"/>
 
     </q-page-sticky>
-    <novaAtividadeModal/>
+    <novaAtividadeModal @atividadeInserida="getAtividades(select)"/>
   </q-page>
 </template>
 
@@ -105,7 +107,7 @@ export default {
       Totais: {
         TotalDespesas: 0,
         HorasProdutivas: 0,
-        HorasImprodutivasd: 0
+        HorasImprodutivas: 0
       },
       select: ""
     };
@@ -173,6 +175,9 @@ export default {
     },
     tableClick(item) {
       window.location = "/Edit";
+    },
+    atualizaLista(){
+
     }
   },
   mounted: function() {

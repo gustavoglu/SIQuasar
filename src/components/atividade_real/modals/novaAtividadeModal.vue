@@ -13,34 +13,36 @@
           <q-tab slot="title" name="despesas"  icon="monetization_on" >Despesas</q-tab>
           
           <q-tab-pane name="atividade">
-           
-            <div class="row">
-              <q-select :error="$v.atividadeNova.Id_Projeto.$error"  class="q-pa-sm col" v-model="atividadeNova.Id_Projeto" :options="projetosSelect" :select="atividadeNova.Id_Projeto" float-label="Projeto"/>
-              <q-select :error="$v.atividadeNova.Id_TipoAtividade.$error"  class="q-pa-sm col" v-model="atividadeNova.Id_TipoAtividade" :options="tiposAtividadeSelect" :select="atividadeNova.Id_TipoAtividade" float-label="Tipo Atividade"/>
-            </div>
-           
-            <q-datetime :error="$v.atividadeNova.Data.$error"  class="q-pa-sm" v-model="atividadeNova.Data" format="DD/MM/YYYY" type="date" @change="val =>{model = val}" stack-label="Data"/>
-           
-            <div class="row">
-              <q-datetime :error="$v.atividadeNova.HoraInicio.$error"  class="q-pa-sm col" v-model="atividadeNova.HoraInicio" format24h  type="time" @change="val =>{model = val}" stack-label="Hora Inicio"/>
-              <q-datetime :error="$v.atividadeNova.HoraFim.$error"   class="q-pa-sm col" v-model="atividadeNova.HoraFim" format24h type="time" @change="val =>{model = val}" stack-label="HoraFim"/>
-            <q-input class="q-pa-sm col" clearable v-model="atividadeNova.TempoImprodutivo" stack-label="Almoço(min)" type="number" placeholder="Almoço(min)"/>
-            </div>
-      
-            <q-input  class="q-pa-sm" clearable v-model="atividadeNova.Comentarios" stack-label="Comentarios" type="textarea" placeholder="Comentarios"/>
-            <q-input  class="q-pa-sm" clearable v-model="atividadeNova.ChamadosJira" stack-label="ChamadosJira" type="textarea" placeholder="ChamadosJira"/>
-            <q-input  :error="$v.atividadeNova.DescAtividades.$error" class="q-pa-sm" clearable v-model="atividadeNova.DescAtividades"  stack-label="Desc. Atividades" type="textarea" placeholder="Desc. Atividades"/>
-          
+            <q-layout>
+            
+              <div class="row">
+                <q-select :error="$v.atividadeNova.Id_Projeto.$error"  class="q-pa-sm col" v-model="atividadeNova.Id_Projeto" :options="projetosSelect" :select="atividadeNova.Id_Projeto" float-label="Projeto"/>
+                <q-select :error="$v.atividadeNova.Id_TipoAtividade.$error"  class="q-pa-sm col" v-model="atividadeNova.Id_TipoAtividade" :options="tiposAtividadeSelect" :select="atividadeNova.Id_TipoAtividade" float-label="Tipo Atividade"/>
+              </div>
+
+              <q-datetime :error="$v.atividadeNova.Data.$error"  class="q-pa-sm" v-model="atividadeNova.Data" format="DD/MM/YYYY" type="date" @change="val =>{model = val}" stack-label="Data"/>
+
+              <div class="row">
+                <q-datetime :error="$v.atividadeNova.HoraInicio.$error"  class="q-pa-sm col" v-model="atividadeNova.HoraInicio" format24h  type="time" @change="val =>{model = val}" stack-label="Hora Inicio"/>
+                <q-datetime :error="$v.atividadeNova.HoraFim.$error"   class="q-pa-sm col" v-model="atividadeNova.HoraFim" format24h type="time" @change="val =>{model = val}" stack-label="HoraFim"/>
+              <q-input class="q-pa-sm col" clearable v-model="atividadeNova.TempoImprodutivo" stack-label="Almoço(min)" type="number" placeholder="Almoço(min)"/>
+              </div>
+
+              <q-input  class="q-pa-sm" clearable v-model="atividadeNova.Comentarios" stack-label="Comentarios" type="textarea" placeholder="Comentarios"/>
+              <q-input  class="q-pa-sm" clearable v-model="atividadeNova.ChamadosJira" stack-label="ChamadosJira" type="textarea" placeholder="ChamadosJira"/>
+              <q-input  :error="$v.atividadeNova.DescAtividades.$error" class="q-pa-sm" clearable v-model="atividadeNova.DescAtividades"  stack-label="Desc. Atividades" type="textarea" placeholder="Desc. Atividades"/>
+
+            </q-layout>
           </q-tab-pane>
           
           <q-tab-pane name="despesas">
-             <q-btn fab color="secondary" icon="add" class="animate-pop" @click.native="addNovaDespesa"/>     
-            <q-page-sticky position="bottom-right" :offset="[30, 30]">
-
-            </q-page-sticky>
-            
+               
+       
             <q-layout>
-
+              <q-page-sticky position="bottom-right" :offset="[30, 60]">
+                <q-btn fab color="secondary" icon="add" class="animate-pop" @click.native="addNovaDespesa"/>  
+              </q-page-sticky>
+            
               <q-item class="fixed-center" v-if="!despesas || despesas.length == 0">
                 <q-item-main sublabel="Nenhuma Despesa Aqui"/>
               </q-item>
@@ -67,7 +69,7 @@
 
         <q-layout-footer>
           <q-toolbar color="secondary">
-            <q-btn  flat label="Salvar" @click.native="salvar"/>
+              <q-btn class="right" flat label="Salvar" @click.native="salvar"/>
           </q-toolbar>
         </q-layout-footer>
       
@@ -78,12 +80,6 @@
 </template>
 
 <script>
-//this.filter("formatDate", value => {
-//  if (value) {
-//    return moment(String(value)).format("DD/MM/YY");
-//  }
-//});
-
 import moment from "moment";
 import axios from "axios";
 import { required, email } from "vuelidate/lib/validators";
@@ -93,7 +89,7 @@ import itemDespesaOffline from "components/despesas/itemDespesaOffline";
 export default {
   data() {
     return {
-      selectedTab: 'atividade',
+      selectedTab: "atividade",
       open: false,
       atividadeLimpa: {},
       atividadeNova: {
@@ -156,20 +152,16 @@ export default {
     }
   },
   methods: {
+    excluiDespesaOffline(despesa) {
+      if (despesa) {
+        let despesaExcluida = {};
+        this.despesas.forEach(d => {
+          if (d.Id == despesa.Id) despesaExcluida = d;
+        });
 
-    excluiDespesaOffline(despesa){
-      if(despesa){
-        let despesaExcluida = {}
-        this.despesas.forEach(d =>{
-          if(d.Id == despesa.Id)
-          despesaExcluida = d;
-        })
-
-        let index = this.despesas.indexOf(despesaExcluida)
-        this.despesas.splice(index,1)
-
+        let index = this.despesas.indexOf(despesaExcluida);
+        this.despesas.splice(index, 1);
       }
-
     },
     atualizaNovaDespesaOffline(despesa) {
       let despesaParaAtualizar = {};
@@ -184,6 +176,17 @@ export default {
         this.despesas.push(despesaNovaObj);
       }
     },
+    validar() {
+      this.$v.atividadeNova.$touch();
+      if (this.$v.atividadeNova.$error) {
+        this.$q.notify({
+          message: "Existem campos obrigatórios não preenchidos",
+          type: "negative"
+        });
+        return false;
+      }
+      return true;
+    },
     addNovaDespesa() {
       this.$root.$emit("abriModalDespesaOffline");
     },
@@ -193,11 +196,53 @@ export default {
     clickItem() {
       this.$emit("clickItem", this.atividadeReal);
     },
-    salvar() {},
+    salvar() {
+      if (!this.validar()) return;
+
+      let atividade = {
+        Id: this.atividadeNova.Id,
+        Data: this.atividadeNova.data,
+        HoraInicio: date.formatDate(this.atividadeNova.horaIni, "HH:mm:ss"),
+        HoraFim: date.formatDate(this.atividadeNova.horaFim, "HH:mm:ss"),
+        TempoImprodutivo: this.atividadeNova.tempoImprodutivo,
+        Comentarios: this.atividadeNova.comentarios,
+        ChamadosJira: this.atividadeNova.chamadosJira,
+        Id_Projeto: this.atividadeNova.selectProjeto,
+        Id_Colaborador: this.atividadeNova.id_Colaborador,
+        Id_TipoAtividade: this.atividadeNova.selectTipoAtividade,
+        DescAtividades: this.atividadeNova.descricaoAtividades,
+        Despesas: this.despesas
+      };
+
+      let token = LocalStorage.get.item("accessToken");
+      if (!token) window.location = "/login";
+      let config = {
+        headers: {
+          Authorization: "bearer " + token,
+          "content-type": "application/json"
+        }
+      };
+
+      Loading.show();
+
+      axios
+        .post("http://si.accist.com.br/api/Atividades_Real/", atividade, config)
+        .then(response => {
+          this.$emit("atividadeInserida", response.data);
+          this.open = false;
+          this.$q.notify({ type: "positive", message: "Atividade Inserida" });
+        })
+        .catch(error => {
+          Loading.hide();
+          this.$q.notify({
+            type: "negative",
+            message: "Algo deu errado ao tentar Inserir a Atividade " + error
+          });
+        });
+    },
     fechaModal() {
       this.open = false;
       Object.assign(this.atividadeNova, this.atividadeLimpa);
-    
     },
     getInfos() {
       Loading.show();
@@ -212,7 +257,7 @@ export default {
 
       axios
         .get(
-          "http://localhost:53084/api/atividades_real/novaAtividade/infos",
+          "http://si.accist.com.br/api/atividades_real/novaAtividade/infos",
           config
         )
         .then(response => {
@@ -221,6 +266,7 @@ export default {
           this.tiposAtividade = infos.TiposAtividade;
           this.tiposDespesa = infos.TiposDespesa;
           this.valorKm = infos.ValorKm;
+          this.$v.atividadeNova.$touch();
           Loading.hide();
         })
         .catch(error => {
@@ -245,12 +291,11 @@ export default {
     Object.assign(this.atividadeLimpa, this.atividadeNova);
     this.$root.$on("abriModalNovaAtividade", () => {
       Object.assign(this.atividadeNova, this.atividadeLimpa);
-      this.selectedTab= 'atividade'
+      this.selectedTab = "atividade";
       this.open = true;
       this.getInfos();
-      this.despesas =[]
+      this.despesas = [];
     });
-    //this.getInfos();
   }
 };
 </script>

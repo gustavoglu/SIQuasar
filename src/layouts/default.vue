@@ -1,9 +1,8 @@
 <template>
   <q-layout view="lHh Lpr lFf">
-    <q-layout-header :props="teste">
+    <q-layout-header>
       <q-toolbar
         color="secondary"
-
         :inverted="$q.theme === 'ios'"
       >
         <q-btn
