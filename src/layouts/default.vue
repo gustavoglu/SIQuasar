@@ -64,7 +64,7 @@ export default {
     },
     logout() {
       let accessToken = LocalStorage.remove("accessToken");
-      window.location = "/login";
+      this.$router.push("/login");
     }
   },
   created: function() {

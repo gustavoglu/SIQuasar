@@ -2,13 +2,15 @@
 <q-layout class="layout"  background="secondary">
   <q-layout-container>
     <q-page padding class="q-pa-sm">
-      <div class=" row flex-center fit">
-        <img src="assets/logoaccist320.png">
-      </div>
-      <div>
-        <q-input color="secondary" name="username" v-model="loginModel.username" class="inputLogin" stack-label="Email" type="email"/>
-        <q-input  color="secondary" name="password" v-model="loginModel.password" class="inputLogin" stack-label="Senha" type="password"/>
-        <q-btn  @click="login()" color="secondary" class="btn-login" flat right label="Login"/>
+      <div class="row fixed-center">
+        <div class="row  flex-center fit ">
+          <img src="assets/logoaccist320.png">
+        </div>
+        <div class="row q-ma-lg">
+          <q-input color="secondary" name="username" v-model="loginModel.username" class="btn-login" stack-label="Email" type="email"/>
+          <q-input color="secondary" name="password" v-model="loginModel.password" class="btn-login" stack-label="Senha" type="password"/>
+          <q-btn :disable="loginModel.username.length == 0 || loginModel.password.length == 0"  @click="login()" color="secondary" class="btn-login"  label="Login"/>
+        </div>
       </div>
     </q-page>
   </q-layout-container>
@@ -68,7 +70,7 @@ export default {
           LocalStorage.set("username", username);
           LocalStorage.set("accessToken", access_token);
 
-          window.location = "/atividades";
+          self.$router.push("/atividades");
           Loading.hide();
         })
         .catch(function(error) {

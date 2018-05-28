@@ -1,5 +1,5 @@
 <template>
-  <q-page class="q-pa-lg">
+  <q-page padding>
   <div>
     <q-select toggle v-model="select"  :options="Periodos" :selected = "PeriodoAtual"   @input="inputPeriodo" float-label="Periodo"/>
  </div>
@@ -13,7 +13,7 @@
      <q-item-tile color="secondary"> {{Totais.HorasProdutivas.toFixed(2) + ' Horas'}} </q-item-tile>
    </q-item>
      <q-item class="col">
-      <q-item-tile  color="secondary" icon="stop"/>
+      <q-item-tile  color="secondary" icon="pause"/>
      <q-item-tile  color="secondary" > {{Totais.HorasImprodutivasd.toFixed(2) + ' Horas'}}</q-item-tile>
    </q-item>
  </div>
@@ -85,7 +85,7 @@ export default {
           periodo.replace("/", "-");
       let accessToken = LocalStorage.get.item("accessToken");
 
-      if (!accessToken) window.location = "/login";
+      if (!accessToken) self.$router.push("/login");
 
       let config = {
         headers: {

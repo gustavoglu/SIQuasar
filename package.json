@@ -1,8 +1,8 @@
 {
-  "name": "si",
+  "name": "si_accist",
   "version": "1.0.0",
-  "description": "si",
-  "productName": "Accist Si",
+  "description": "SI",
+  "productName": "SI ACCIST",
   "cordovaId": "br.com.accist.si",
   "author": "Gustavo Giroldo <gustavoglu@hotmail.com>",
   "private": true,

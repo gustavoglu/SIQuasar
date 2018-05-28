@@ -102,9 +102,9 @@ module.exports = function (ctx) {
     pwa: {
       cacheExt: 'js,html,css,ttf,eot,otf,woff,woff2,json,svg,gif,jpg,jpeg,png,wav,ogg,webm,flac,aac,mp4,mp3',
       manifest: {
-        // name: 'Quasar App',
-        // short_name: 'Quasar-PWA',
-        // description: 'Best PWA App in town!',
+         name: 'SI ACCIST',
+         short_name: 'SIACCIST',
+         description: 'App para apontamento de atividades da Accist',
         display: 'standalone',
         orientation: 'portrait',
         background_color: '#ffffff',

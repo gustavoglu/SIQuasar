@@ -18,7 +18,7 @@
          </q-item-tile>
 
           <q-item-tile>
-            <q-icon name="stop"/>
+            <q-icon name="pause"/>
             <span>{{atividadeReal.HoraFim | formatHours}}</span>
          </q-item-tile>
 
