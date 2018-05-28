@@ -2,16 +2,16 @@
   <div>
     <q-item link @click.native="clickItem">
       <q-item-side left>
-        <q-icon name="date_range"></q-icon>
-        <span>{{atividadeReal.Data  | formatDate}}</span>
+        <q-item-tile icon="date_range"/>
+        {{atividadeReal.Data  | formatDate}}
       </q-item-side>
 
-      <q-icon name="chevron_right"/>
+      <q-item-tile icon="chevron_right"/>
       <q-item-main :label="atividadeReal.ClienteProjeto"/>
       
        <q-item-side right>
          
-         <q-item-tile>
+         <q-item-tile color="secondary">
            <q-icon name="play_circle_outline"/>
           <span>{{atividadeReal.HoraInicio | formatHours}}</span>
          </q-item-tile>
@@ -22,8 +22,9 @@
          </q-item-tile>
 
       </q-item-side>
-   
+    
     </q-item>
+   
   </div>
 </template>
 

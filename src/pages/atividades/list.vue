@@ -1,9 +1,9 @@
 <template>
   <q-page class="q-pa-lg">
   <div>
-     <q-select  toggle v-model="select"  :options="Periodos" :selected = "PeriodoAtual"  :change="periodoChange" float-label="Periodo"/>
+    <q-select toggle v-model="select"  :options="Periodos" :selected = "PeriodoAtual"  :change="periodoChange" float-label="Periodo"/>
  </div>
- <div class="row">
+ <div class="row q-ma-sm">
    <q-item class="col">
     <q-item-tile  color="secondary" icon="monetization_on"/>
      <q-item-tile color="secondary"> {{'R$ '+ Totais.TotalDespesas.toFixed(2)}}</q-item-tile>
@@ -19,7 +19,7 @@
  </div>
  <div>
 
-   <q-list>
+   <q-list no-border>
      <div v-for="atividade in Atividades">
         <itemAtividadeReal :atividadeReal="atividade"/>
      </div>
@@ -107,7 +107,7 @@ export default {
       Totais: {
         TotalDespesas: 0,
         HorasProdutivas: 0,
-        HorasImprodutivas: 0
+        HorasImprodutivasd: 0
       },
       select: ""
     };
@@ -159,12 +159,19 @@ export default {
           self.Periodos = self.createPeriodos(dataResponse.Periodos);
           self.Totais = dataResponse.Totais;
           if (!periodo) self.select = self.PeriodoAtual;
+          Loading.hide();
         })
         .catch(function(errors) {
+          Loading.hide();
+            self.$q.notify({
+            type: "negative",
+            message: "Algo deu errado ao tentar carregar as Atividades " + error
+          });
+          
           return;
         });
 
-      Loading.hide();
+    
     },
     createPeriodos(periodos) {
       let periodosArray = [];

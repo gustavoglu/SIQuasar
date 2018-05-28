@@ -69,6 +69,8 @@
 
         <q-layout-footer>
           <q-toolbar color="secondary">
+            <q-toolbar-title></q-toolbar-title>
+              <q-btn class="right" flat label="Cancelar" @click.native="fechaModal"/>
               <q-btn class="right" flat label="Salvar" @click.native="salvar"/>
           </q-toolbar>
         </q-layout-footer>
@@ -199,21 +201,24 @@ export default {
     salvar() {
       if (!this.validar()) return;
 
-      let atividade = {
-        Id: this.atividadeNova.Id,
-        Data: this.atividadeNova.data,
-        HoraInicio: date.formatDate(this.atividadeNova.horaIni, "HH:mm:ss"),
-        HoraFim: date.formatDate(this.atividadeNova.horaFim, "HH:mm:ss"),
-        TempoImprodutivo: this.atividadeNova.tempoImprodutivo,
-        Comentarios: this.atividadeNova.comentarios,
-        ChamadosJira: this.atividadeNova.chamadosJira,
-        Id_Projeto: this.atividadeNova.selectProjeto,
-        Id_Colaborador: this.atividadeNova.id_Colaborador,
-        Id_TipoAtividade: this.atividadeNova.selectTipoAtividade,
-        DescAtividades: this.atividadeNova.descricaoAtividades,
+      let atividadeForm = {
+       Atividade_Real :{
+       Id: this.atividadeNova.Id,
+        Data: this.atividadeNova.Data,
+        HoraInicio: date.formatDate(this.atividadeNova.HoraInicio, "HH:mm:ss"),
+        HoraFim: date.formatDate(this.atividadeNova.HoraFim, "HH:mm:ss"),
+        TempoImprodutivo: this.atividadeNova.TempoImprodutivo,
+        Comentarios: this.atividadeNova.Comentarios,
+        ChamadosJira: this.atividadeNova.ChamadosJira,
+        Id_Projeto: this.atividadeNova.Id_Projeto,
+        Id_Colaborador: this.atividadeNova.Id_Colaborador,
+        Id_TipoAtividade: this.atividadeNova.Id_TipoAtividade,
+        DescAtividades: this.atividadeNova.DescricaoAtividades,
+       },
         Despesas: this.despesas
       };
-
+      //alert(atividadeForm.Atividade_Real.Data)
+      //return
       let token = LocalStorage.get.item("accessToken");
       if (!token) window.location = "/login";
       let config = {
@@ -226,7 +231,7 @@ export default {
       Loading.show();
 
       axios
-        .post("http://si.accist.com.br/api/Atividades_Real/", atividade, config)
+        .post("http://localhost:53084/api/Atividades_Real/", atividadeForm, config)
         .then(response => {
           this.$emit("atividadeInserida", response.data);
           this.open = false;

@@ -63,8 +63,9 @@
 
         <q-layout-footer>
           <q-toolbar color="secondary">
-            
-            <q-btn  flat label="Salvar" @click.native="salvar"/>
+            <q-toolbar-title></q-toolbar-title>
+              <q-btn flat label="Cancelar" @click.native="fechaModal"/>
+              <q-btn flat label="Salvar" @click.native="salvar"/>
           </q-toolbar>
         </q-layout-footer>
       
@@ -79,18 +80,18 @@ import axios from "axios";
 import { LocalStorage, date, Loading } from "quasar";
 import despesaItem from "components/despesas/itemDespesa";
 import { required, email } from "vuelidate/lib/validators";
-import despesaModal from 'components/despesas/modals/modalDespesa'
+import despesaModal from "components/despesas/modals/modalDespesa";
 
 export default {
   data() {
     return {
       name: "Editar Atividade",
-      open : false,
-      selectedTab:'atividade',
+      open: false,
+      selectedTab: "atividade",
       despesas: [],
       tipoDespesas: [],
       atividade: {
-        Id : null,
+        Id: null,
         projetos: [],
         tipoAtividades: [],
         data: "",
@@ -103,22 +104,22 @@ export default {
         parametroKm: 0,
         selectProjeto: "",
         selectTipoAtividade: "",
-        id_Colaborador: '',
+        id_Colaborador: "",
         valorKm: 0
       },
-      novaDespesa :{
-        Id:'',
-        Comentarios: '',
+      novaDespesa: {
+        Id: "",
+        Comentarios: "",
         Valor: 0,
         NaoReembolsar: false,
         Km: 0,
         UseiMeuCarro: true,
-        Id_TipoDespesa: '',
-        Id_Projeto: '',
-        Id_Atividade: '',
-        Id_Colaborador : ''
-      }, 
-  }
+        Id_TipoDespesa: "",
+        Id_Projeto: "",
+        Id_Atividade: "",
+        Id_Colaborador: ""
+      }
+    };
   },
   validations: {
     atividade: {
@@ -131,20 +132,20 @@ export default {
     }
   },
   methods: {
-    fechaModal(){
-      this.open = false
-      this.selectedTab='atividade'
+    fechaModal() {
+      this.open = false;
+      this.selectedTab = "atividade";
     },
-    addNovaDespesa(){
-      if(this.atividade.Id){
-        this.novaDespesa.Id_Projeto = this.atividade.selectProjeto
-        this.novaDespesa.Id_Atividade = this.atividade.Id
-        this.novaDespesa.Id_Colaborador = this.atividade.id_Colaborador
+    addNovaDespesa() {
+      if (this.atividade.Id) {
+        this.novaDespesa.Id_Projeto = this.atividade.selectProjeto;
+        this.novaDespesa.Id_Atividade = this.atividade.Id;
+        this.novaDespesa.Id_Colaborador = this.atividade.id_Colaborador;
       }
-      this.$root.$emit('abriModalDespesa',this.novaDespesa)
+      this.$root.$emit("abriModalDespesa", this.novaDespesa);
     },
-    addNovaDespesaSalva(despesa){
-      this.despesas.push(despesa)
+    addNovaDespesaSalva(despesa) {
+      this.despesas.push(despesa);
     },
     salvar() {
       this.$v.atividade.$touch();
@@ -159,21 +160,21 @@ export default {
 
       this.atualizaAtividade();
     },
-    atualizaAtividade(){
+    atualizaAtividade() {
       let atividade = {
-        Id:this.atividade.Id,
+        Id: this.atividade.Id,
         Data: this.atividade.data,
-        HoraInicio: date.formatDate (this.atividade.horaIni,'HH:mm:ss'),
-        HoraFim: date.formatDate (this.atividade.horaFim,'HH:mm:ss'),
+        HoraInicio: date.formatDate(this.atividade.horaIni, "HH:mm:ss"),
+        HoraFim: date.formatDate(this.atividade.horaFim, "HH:mm:ss"),
         TempoImprodutivo: this.atividade.tempoImprodutivo,
         Comentarios: this.atividade.comentarios,
         ChamadosJira: this.atividade.chamadosJira,
         Id_Projeto: this.atividade.selectProjeto,
-        Id_Colaborador : this.atividade.id_Colaborador,
+        Id_Colaborador: this.atividade.id_Colaborador,
         Id_TipoAtividade: this.atividade.selectTipoAtividade,
-        DescAtividades: this.atividade.descricaoAtividades,
-      }
-      
+        DescAtividades: this.atividade.descricaoAtividades
+      };
+
       let token = LocalStorage.get.item("accessToken");
       if (!token) window.location = "/login";
       let config = {
@@ -183,13 +184,10 @@ export default {
         }
       };
 
-      Loading.show()
+      Loading.show();
 
-        axios.put(
-          "http://si.accist.com.br/api/atividades_real/",
-          atividade,
-          config
-        )
+      axios
+        .put("http://si.accist.com.br/api/atividades_real/", atividade, config)
         .then(response => {
           this.$emit("atividadeAtualizada", response.data);
           Loading.hide();
@@ -203,33 +201,36 @@ export default {
             message: "Algo deu errado ao tentar Atualizar a Atividade " + error
           });
         });
-
     },
-    atualizaDespesa(despesa){
-      this.despesas.forEach(d =>{
-        if(d.Id == despesa.Id)
-          d = despesa
-      })
+    atualizaDespesa(despesa) {
+      this.despesas.forEach(d => {
+        if (d.Id == despesa.Id) d = despesa;
+      });
     },
-    excluiDespesa(despesa){
-      
+    excluiDespesa(despesa) {
       let despesaParaExcluir = {};
-      this.despesas.forEach(d => { if(d.Id == despesa.Id) despesaParaExcluir = d; })
+      this.despesas.forEach(d => {
+        if (d.Id == despesa.Id) despesaParaExcluir = d;
+      });
 
-      let index = this.despesas.indexOf(despesaParaExcluir)
-      if(index >= 0) this.despesas.splice(index,1)
+      let index = this.despesas.indexOf(despesaParaExcluir);
+      if (index >= 0) this.despesas.splice(index, 1);
     },
     setAtividade(atividadeModel) {
       let atv = atividadeModel.Atividade_Real;
 
-      let horaIni = "" + atv.Data.toString().replace("00:00:00", "") + atv.HoraInicio;
-      let horaFim = "" + atv.Data.toString().replace("00:00:00", "") + atv.HoraFim;
+      let horaIni =
+        "" + atv.Data.toString().replace("00:00:00", "") + atv.HoraInicio;
+      let horaFim =
+        "" + atv.Data.toString().replace("00:00:00", "") + atv.HoraFim;
 
-      this.atividade.tipoAtividades = this.createTipoAtividadesSelect( atividadeModel.TipoAtividades);
+      this.atividade.tipoAtividades = this.createTipoAtividadesSelect(
+        atividadeModel.TipoAtividades
+      );
       this.atividade.projetos = this.createProjetosSelect(
         atividadeModel.Projetos
       );
-      this.atividade.Id = atv.Id
+      this.atividade.Id = atv.Id;
       this.tipoDespesas = atividadeModel.TipoDespesas;
       this.atividade.parametroKm = atividadeModel.Colaborador_Parametro_Km;
       this.atividade.selectTipoAtividade = atv.Id_TipoAtividade;
@@ -249,7 +250,7 @@ export default {
       this.atividade.chamadosJira = atv.ChamadosJira;
       this.atividade.descricaoAtividades = atv.DescAtividades;
       this.atividade.valorKm = atividadeModel.Colaborador_Parametro_Km;
-      this.atividade.id_Colaborador = atv.Id_Colaborador
+      this.atividade.id_Colaborador = atv.Id_Colaborador;
 
       this.$v.atividade.$touch();
     },
@@ -268,11 +269,7 @@ export default {
       };
 
       axios
-        .get(
-          "http://localhost:53084/api/atividades_real/" +
-            id,
-          config
-        )
+        .get("http://si.accist.com.br/api/atividades_real/" + id, config)
         .then(function(response) {
           let dataResponse = response.data;
           let atv = dataResponse.Atividade_Real;
@@ -282,7 +279,10 @@ export default {
           Loading.hide();
         })
         .catch(function(error) {
-          alert(error);
+          self.$q.notify({
+            type: "negative",
+            message: "Algo deu errado ao tentar carregar a Atividade " + error
+          });
           Loading.hide();
         });
     },
@@ -313,15 +313,13 @@ export default {
     despesaItem,
     despesaModal
   },
-  mounted: function() {
-  
-  },
-  created:function(){
-    this.$root.$on('abriModalEditAtividade',id=>{
-      if(!id) return
-      this.open = true
+  mounted: function() {},
+  created: function() {
+    this.$root.$on("abriModalEditAtividade", id => {
+      if (!id) return;
+      this.open = true;
       this.getAtividade(id);
-    })
+    });
   }
 };
 </script>
