@@ -1,5 +1,6 @@
 <template>
   <div>
+    
     <q-item link @click.native="clickItem">
       <q-item-side left>
         <q-item-tile icon="date_range"/>
@@ -24,7 +25,7 @@
       </q-item-side>
     
     </q-item>
-   
+  
   </div>
 </template>
 

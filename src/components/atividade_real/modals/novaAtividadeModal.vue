@@ -88,6 +88,9 @@ import { required, email } from "vuelidate/lib/validators";
 import { date, LocalStorage, Loading } from "quasar";
 import modalDespesaOffline from "components/despesas/modals/modalDespesaOffline";
 import itemDespesaOffline from "components/despesas/itemDespesaOffline";
+function validaDataMinima(value) {
+  return new Date(value) >= new Date(this.dataLimite);
+}
 export default {
   data() {
     return {
@@ -110,12 +113,13 @@ export default {
       tiposAtividade: [],
       tiposDespesa: [],
       projetos: [],
-      valorKm: 0
+      valorKm: 0,
+      dataLimite: ""
     };
   },
   validations: {
     atividadeNova: {
-      Data: { required },
+      Data: { required, validaDataMinima },
       HoraInicio: { required },
       HoraFim: { required },
       DescAtividades: { required },
@@ -181,6 +185,14 @@ export default {
     validar() {
       this.$v.atividadeNova.$touch();
       if (this.$v.atividadeNova.$error) {
+        if (this.$v.atividadeNova.Data.$error) {
+          this.$q.notify({
+            message: "Data é maior que a Data mínima de inserção de Atividade",
+            type: "negative"
+          });
+          return;
+        }
+
         this.$q.notify({
           message: "Existem campos obrigatórios não preenchidos",
           type: "negative"
@@ -200,21 +212,24 @@ export default {
     },
     salvar() {
       if (!this.validar()) return;
-
+      let self = this
       let atividadeForm = {
-       Atividade_Real :{
-       Id: this.atividadeNova.Id,
-        Data: this.atividadeNova.Data,
-        HoraInicio: date.formatDate(this.atividadeNova.HoraInicio, "HH:mm:ss"),
-        HoraFim: date.formatDate(this.atividadeNova.HoraFim, "HH:mm:ss"),
-        TempoImprodutivo: this.atividadeNova.TempoImprodutivo,
-        Comentarios: this.atividadeNova.Comentarios,
-        ChamadosJira: this.atividadeNova.ChamadosJira,
-        Id_Projeto: this.atividadeNova.Id_Projeto,
-        Id_Colaborador: this.atividadeNova.Id_Colaborador,
-        Id_TipoAtividade: this.atividadeNova.Id_TipoAtividade,
-        DescAtividades: this.atividadeNova.DescricaoAtividades,
-       },
+        Atividade_Real: {
+          Id: this.atividadeNova.Id,
+          Data: date.formatDate(this.atividadeNova.Data, "MM/DD/YYYY"),
+          HoraInicio: date.formatDate(
+            this.atividadeNova.HoraInicio,
+            "HH:mm:ss"
+          ),
+          HoraFim: date.formatDate(this.atividadeNova.HoraFim, "HH:mm:ss"),
+          TempoImprodutivo: this.atividadeNova.TempoImprodutivo,
+          Comentarios: this.atividadeNova.Comentarios,
+          ChamadosJira: this.atividadeNova.ChamadosJira,
+          Id_Projeto: this.atividadeNova.Id_Projeto,
+          Id_Colaborador: this.atividadeNova.Id_Colaborador,
+          Id_TipoAtividade: this.atividadeNova.Id_TipoAtividade,
+          DescAtividades: this.atividadeNova.DescAtividades
+        },
         Despesas: this.despesas
       };
       //alert(atividadeForm.Atividade_Real.Data)
@@ -231,10 +246,15 @@ export default {
       Loading.show();
 
       axios
-        .post("http://localhost:53084/api/Atividades_Real/", atividadeForm, config)
+        .post(
+          "http://si.accist.com.br/api/Atividades_Real/",
+          atividadeForm,
+          config
+        )
         .then(response => {
           this.$emit("atividadeInserida", response.data);
           this.open = false;
+          self.$root.$emit('atualizarAtividades')
           this.$q.notify({ type: "positive", message: "Atividade Inserida" });
         })
         .catch(error => {
@@ -271,6 +291,7 @@ export default {
           this.tiposAtividade = infos.TiposAtividade;
           this.tiposDespesa = infos.TiposDespesa;
           this.valorKm = infos.ValorKm;
+          this.dataLimite = infos.DataLimite;
           this.$v.atividadeNova.$touch();
           Loading.hide();
         })

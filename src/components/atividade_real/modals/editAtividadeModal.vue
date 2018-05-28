@@ -19,7 +19,7 @@
                 <q-select @blur="$v.atividade.selectTipoAtividade.$touch" :error="$v.atividade.selectTipoAtividade.$error"  class="q-pa-sm col" v-model="atividade.selectTipoAtividade" :options="atividade.tipoAtividades" :select="atividade.selectTipoAtividade" stack-label="Tipo Atividade"/>
               </div>
 
-              <q-datetime class="q-pa-sm" v-model="atividade.data" format="DD/MM/YYYY" type="date" @change="val =>{model = val}" stack-label="Data"/>
+              <q-datetime :error="$v.atividade.data.$error" class="q-pa-sm" v-model="atividade.data" format="DD/MM/YYYY" type="date" @change="val =>{model = val}" stack-label="Data"/>
 
               <div class="row">
                 <q-datetime @blur="$v.atividade.horaIni.$touch" :error="$v.atividade.horaIni.$error"  class="q-pa-sm col" v-model="atividade.horaIni" format24h  type="time" @change="val =>{model = val}" stack-label="Hora Inicio"/>
@@ -64,6 +64,7 @@
         <q-layout-footer>
           <q-toolbar color="secondary">
             <q-toolbar-title></q-toolbar-title>
+              <q-btn color="red-6"  label="Excluir" @click.native="excluir"/>
               <q-btn flat label="Cancelar" @click.native="fechaModal"/>
               <q-btn flat label="Salvar" @click.native="salvar"/>
           </q-toolbar>
@@ -81,12 +82,15 @@ import { LocalStorage, date, Loading } from "quasar";
 import despesaItem from "components/despesas/itemDespesa";
 import { required, email } from "vuelidate/lib/validators";
 import despesaModal from "components/despesas/modals/modalDespesa";
-
+function validaDataMinima(value) {
+  return new Date(value) >= new Date(this.dataLimite);
+}
 export default {
   data() {
     return {
       name: "Editar Atividade",
       open: false,
+      dataLimite: '',
       selectedTab: "atividade",
       despesas: [],
       tipoDespesas: [],
@@ -123,7 +127,7 @@ export default {
   },
   validations: {
     atividade: {
-      data: { required },
+      data: { required, validaDataMinima },
       horaIni: { required },
       horaFim: { required },
       descricaoAtividades: { required },
@@ -132,6 +136,49 @@ export default {
     }
   },
   methods: {
+    excluir(){
+      this.$q
+        .dialog({
+          title: "Atenção",
+          ok: "Confirmar",
+          cancel: "Cancelar",
+          message: "Tem certeza que deseja excluir esta Atividade ?"
+        })
+        .then(() => {
+          this.excluiAtividade()
+
+        })
+        .catch(() => {});
+    },
+    excluiAtividade(){
+      let self = this
+      let token = LocalStorage.get.item("accessToken");
+      if (!token) window.location = "/login";
+      let config = {
+        headers: {
+          Authorization: "bearer " + token,
+          "content-type": "application/json"
+        }
+      };
+
+      Loading.show();
+
+      axios
+        .delete("http://si.accist.com.br/api/atividades_real/" + this.atividade.Id, config)
+        .then(response => {
+          Loading.hide();
+          this.open = false;
+          self.$root.$emit('atualizarAtividades')
+          this.$q.notify({ type: "positive", message: "Atividade Excluída" });
+        })
+        .catch(error => {
+          Loading.hide();
+          this.$q.notify({
+            type: "negative",
+            message: "Algo deu errado ao tentar Excluir a Atividade " + error
+          });
+        });
+    },
     fechaModal() {
       this.open = false;
       this.selectedTab = "atividade";
@@ -151,6 +198,14 @@ export default {
       this.$v.atividade.$touch();
 
       if (this.$v.atividade.$error) {
+        if (this.$v.atividade.data.$error) {
+          this.$q.notify({
+            message: "A Data é maior que a Data mínima de inserção de Atividade",
+            type: "negative"
+          });
+          return;
+        }
+
         this.$q.notify({
           message: "Existem campos obrigatórios não preenchidos",
           type: "negative"
@@ -161,9 +216,10 @@ export default {
       this.atualizaAtividade();
     },
     atualizaAtividade() {
+      let self = this
       let atividade = {
         Id: this.atividade.Id,
-        Data: this.atividade.data,
+        Data: date.formatDate(this.atividade.data,'MM/DD/YYYY'),
         HoraInicio: date.formatDate(this.atividade.horaIni, "HH:mm:ss"),
         HoraFim: date.formatDate(this.atividade.horaFim, "HH:mm:ss"),
         TempoImprodutivo: this.atividade.tempoImprodutivo,
@@ -192,6 +248,7 @@ export default {
           this.$emit("atividadeAtualizada", response.data);
           Loading.hide();
           this.open = false;
+          self.$root.$emit('atualizarAtividades')
           this.$q.notify({ type: "positive", message: "Atividade Atualizada" });
         })
         .catch(error => {
@@ -251,7 +308,7 @@ export default {
       this.atividade.descricaoAtividades = atv.DescAtividades;
       this.atividade.valorKm = atividadeModel.Colaborador_Parametro_Km;
       this.atividade.id_Colaborador = atv.Id_Colaborador;
-
+      this.dataLimite = atividadeModel.DataLimite
       this.$v.atividade.$touch();
     },
     getAtividade(id) {

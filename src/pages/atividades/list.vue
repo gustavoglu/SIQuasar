@@ -1,7 +1,7 @@
 <template>
   <q-page class="q-pa-lg">
   <div>
-    <q-select toggle v-model="select"  :options="Periodos" :selected = "PeriodoAtual"  :change="periodoChange" float-label="Periodo"/>
+    <q-select toggle v-model="select"  :options="Periodos" :selected = "PeriodoAtual"   @input="inputPeriodo" float-label="Periodo"/>
  </div>
  <div class="row q-ma-sm">
    <q-item class="col">
@@ -25,24 +25,7 @@
      </div>
    </q-list>
    <editAtividadeModal />
-   <!--<q-table 
-   :data="tableDataCreate(this.Atividades)" 
-   :columns="columns" 
-   pagination = "serverPagination"
-   >
-   
-      <q-tr 
-      slot="body" 
-      slot-scope="props" 
-      :props="props" 
-      @click.native="rowClick(props.row)" 
-      class="cursor-pointer">
-        <q-td v-for="col in props.cols" :key="col.name" :props="props">
-           {{ col.value }} 
-        </q-td>
-      </q-tr> 
-      
-   </q-table>-->
+
  </div>
   <q-page-sticky position="bottom-right" :offset="[18, 18]">
 
@@ -58,49 +41,12 @@ import axios from "axios";
 import { LocalStorage, Loading } from "quasar";
 import itemAtividadeReal from "components/atividade_real/itemAtividadeReal";
 import qs from "qs";
-import novaAtividadeModal from 'components/atividade_real/modals/novaAtividadeModal'
-import editAtividadeModal from 'components/atividade_real/modals/editAtividadeModal'
+import novaAtividadeModal from "components/atividade_real/modals/novaAtividadeModal";
+import editAtividadeModal from "components/atividade_real/modals/editAtividadeModal";
 
 export default {
   data() {
     return {
-      serverPagination: {
-        page: 1,
-        rowsNumber: 20
-      },
-      config: {
-        // title: 'Produtos',
-        columnPicker: true,
-        selection: "single",
-        rowHeight: "50px"
-      },
-      columns: [
-        {
-          name: "data",
-          required: true,
-          label: "Data",
-          align: "left",
-          field: "data",
-          sortable: true
-        },
-        {
-          name: "clienteProjeto",
-          required: true,
-          label: "Cliente/Projeto",
-          align: "left",
-          field: "clienteProjeto",
-          sortable: true
-        },
-        {
-          name: "horaIni",
-          required: true,
-          label: "Hora Inicio",
-          align: "left",
-          field: "horaIni",
-          sortable: true
-        }
-      ],
-
       PeriodoAtual: "",
       Periodos: [],
       Atividades: [],
@@ -113,8 +59,8 @@ export default {
     };
   },
   methods: {
-    novaAtividade(){
-      this.$root.$emit('abriModalNovaAtividade');
+    novaAtividade() {
+      this.$root.$emit("abriModalNovaAtividade");
     },
     rowClick(row) {
       window.location = "atividades/Edit";
@@ -154,7 +100,20 @@ export default {
         .get(uri, config)
         .then(function(response) {
           let dataResponse = response.data;
-          self.Atividades = dataResponse.Atividades;
+          self.Atividades = [];
+          dataResponse.Atividades.forEach(a => {
+            self.Atividades.push(a);
+          });
+          self.Atividades.sort((a, b) => {
+
+            let date1 = new Date(a.Data.replace('00:00:00', a.HoraInicio));
+            let date2 = new Date(b.Data.replace('00:00:00', b.HoraInicio));
+            if (date1 > date2) return -1;
+
+            if (date1 < date2) return 1;
+
+            return 0;
+          });
           self.PeriodoAtual = dataResponse.PeriodoAtual;
           self.Periodos = self.createPeriodos(dataResponse.Periodos);
           self.Totais = dataResponse.Totais;
@@ -163,15 +122,13 @@ export default {
         })
         .catch(function(errors) {
           Loading.hide();
-            self.$q.notify({
+          self.$q.notify({
             type: "negative",
             message: "Algo deu errado ao tentar carregar as Atividades " + error
           });
-          
+
           return;
         });
-
-    
     },
     createPeriodos(periodos) {
       let periodosArray = [];
@@ -183,27 +140,28 @@ export default {
     tableClick(item) {
       window.location = "/Edit";
     },
-    atualizaLista(){
-
+    atualizaLista() {},
+    inputPeriodo(periodoSelecionado) {
+      let self = this;
+      if (periodoSelecionado.value == self.select) return;
+      let periodo = self.select;
+      if (self.select) self.getAtividades(periodo);
     }
   },
   mounted: function() {
     let self = this;
     self.getAtividades();
   },
-  computed: {
-    periodoChange() {
-      let self = this;
-      let periodo = self.select;
-      if (self.select) self.getAtividades(periodo);
-    }
-  },
+  computed: {},
   components: {
     itemAtividadeReal,
     novaAtividadeModal,
     editAtividadeModal
   },
   created: function() {
+    this.$root.$on("atualizarAtividades", () => {
+      this.getAtividades(this.select);
+    });
     this.$root.$emit("titulo", "Atividades Realizadas");
   }
 };

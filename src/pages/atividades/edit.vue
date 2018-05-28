@@ -231,6 +231,8 @@ export default {
       this.atividade.descricaoAtividades = atv.DescAtividades;
       this.atividade.valorKm = atividadeModel.Colaborador_Parametro_Km;
       this.atividade.id_Colaborador = atv.Id_Colaborador
+
+       Loading.hide();
     },
     getAtividade(id) {
       Loading.show();
@@ -260,7 +262,7 @@ export default {
 
           self.setAtividade(dataResponse);
 
-          Loading.hide();
+         
         })
         .catch(function(error) {
           alert(error);

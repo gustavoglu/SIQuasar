@@ -78,7 +78,8 @@ module.exports = function (ctx) {
         'QModal',
         'QCheckbox',
         'QBtnGroup',
-        'QPageSticky'
+        'QPageSticky',
+        'QCard'
 
       ],
       directives: [
