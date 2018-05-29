@@ -70,7 +70,7 @@ export default {
           LocalStorage.set("username", username);
           LocalStorage.set("accessToken", access_token);
 
-          self.$router.push("/atividades");
+          self.$router.push("/");
           Loading.hide();
         })
         .catch(function(error) {
