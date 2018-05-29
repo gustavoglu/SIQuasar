@@ -4,7 +4,7 @@
     <q-page padding class="q-pa-sm">
       <div class="row fixed-center">
         <div class="row  flex-center fit ">
-          <img src="assets/logoaccist320.png">
+          <img src="statics/logoaccist320.png">
         </div>
         <div class="row q-ma-lg">
           <q-input color="secondary" name="username" v-model="loginModel.username" class="btn-login" stack-label="Email" type="email"/>
