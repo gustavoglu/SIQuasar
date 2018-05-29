@@ -24,7 +24,7 @@
               <div class="row">
                 <q-datetime @blur="$v.atividade.horaIni.$touch" :error="$v.atividade.horaIni.$error"  class="q-pa-sm col" v-model="atividade.horaIni" format24h  type="time" @change="val =>{model = val}" stack-label="Hora Inicio"/>
                 <q-datetime @blur="$v.atividade.horaFim.$touch" :error="$v.atividade.horaFim.$error"   class="q-pa-sm col" v-model="atividade.horaFim" format24h type="time" @change="val =>{model = val}" stack-label="HoraFim"/>
-                <q-input  class="q-pa-sm" clearable v-model="atividade.tempoImprodutivo" stack-label="Almoço(min)" type="number" placeholder="Almoço"/>
+                <q-input class="col q-pa-sm" clearable v-model="atividade.tempoImprodutivo" stack-label="Almoço(min)" type="number" placeholder="Almoço"/>
               </div>
 
               <q-input  class="q-pa-sm" clearable v-model="atividade.comentarios" stack-label="Comentarios" type="textarea" placeholder="Comentarios"/>

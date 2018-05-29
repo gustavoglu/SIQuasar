@@ -30,7 +30,7 @@
         link
         inset-delimiter
       >
-        <q-list-header>Olá</q-list-header>
+        <q-list-header>{{OlaUserName}}</q-list-header>
         <q-item @click.native='logout()'>
           <q-item-side icon="power settings new" />
           <q-item-main label="Logout"/>
@@ -55,10 +55,17 @@ export default {
       // props: [title],
     };
   },
+  computed:{
+    OlaUserName() {
+      let username = LocalStorage.get.item("username");
+      if (!username) return "Olá";
+      return "Olá " + username;
+    },
+  },
   methods: {
     openURL,
     getUserName() {
-      let username = LocalStorage.item.get("username");
+      let username = LocalStorage.get.item("username");
       if (!username) return "";
       return "Olá " + username;
     },

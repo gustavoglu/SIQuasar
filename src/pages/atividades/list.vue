@@ -105,9 +105,8 @@ export default {
             self.Atividades.push(a);
           });
           self.Atividades.sort((a, b) => {
-
-            let date1 = new Date(a.Data.replace('00:00:00', a.HoraInicio));
-            let date2 = new Date(b.Data.replace('00:00:00', b.HoraInicio));
+            let date1 = new Date(a.Data.replace("00:00:00", a.HoraInicio));
+            let date2 = new Date(b.Data.replace("00:00:00", b.HoraInicio));
             if (date1 > date2) return -1;
 
             if (date1 < date2) return 1;
@@ -152,13 +151,24 @@ export default {
     let self = this;
     self.getAtividades();
   },
-  computed: {},
+  computed: {
+    tokenExpirou() {
+      let expires = LocalStorage.get.item("expires");
+      if (expires && new Date(expires) > Date.now()) return false;
+
+      this.$router.push("/login");
+      this.$q.notify({ type: "warning", message: "Sua Sessão Expirou" });
+      return true;
+    }
+  },
   components: {
     itemAtividadeReal,
     novaAtividadeModal,
     editAtividadeModal
   },
   created: function() {
+    this.tokenExpirou
+      
     this.$root.$on("atualizarAtividades", () => {
       this.getAtividades(this.select);
     });

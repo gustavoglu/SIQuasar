@@ -206,7 +206,7 @@ export default {
     inputValor(valor) {},
     atualizaDespesa() {
       let token = LocalStorage.get.item("accessToken");
-      if (!token) window.location = "/login";
+      if (!token) this.$router.push("/login");
       let config = {
         headers: {
           Authorization: "bearer " + token,

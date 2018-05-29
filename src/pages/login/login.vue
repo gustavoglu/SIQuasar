@@ -1,19 +1,15 @@
 <template>
 <q-layout class="layout"  background="secondary">
-  <q-layout-container>
-    <q-page padding class="q-pa-sm">
-      <div class="row fixed-center">
-        <div class="row  flex-center fit ">
-          <img src="statics/logoaccist320.png">
-        </div>
-        <div class="row q-ma-lg">
-          <q-input color="secondary" name="username" v-model="loginModel.username" class="btn-login" stack-label="Email" type="email"/>
-          <q-input color="secondary" name="password" v-model="loginModel.password" class="btn-login" stack-label="Senha" type="password"/>
-          <q-btn :disable="loginModel.username.length == 0 || loginModel.password.length == 0"  @click="login()" color="secondary" class="btn-login"  label="Login"/>
-        </div>
+ 
+    <q-page padding>
+      <div class="column fixed-center">
+        <img class="q-ma-lg col-5 col-md-auto"  src="statics/logoaccist320.png">
+        <q-input class="q-ma-sm col-5 col-md-auto" color="secondary" name="username" v-model="loginModel.username" stack-label="Email" type="email"/>
+        <q-input class="q-ma-sm col-5 col-md-auto" color="secondary" name="password" v-model="loginModel.password" stack-label="Senha" type="password"/>
+        <q-btn class="q-ma-sm col-5 col-md-auto" :disable="loginModel.username.length == 0 || loginModel.password.length == 0"  @click="login()" color="secondary"   label="Login"/>
       </div>
     </q-page>
-  </q-layout-container>
+ 
 </q-layout>
 </template>
 
@@ -69,6 +65,7 @@ export default {
 
           LocalStorage.set("username", username);
           LocalStorage.set("accessToken", access_token);
+          LocalStorage.set("expires", data['.expires']);
 
           self.$router.push("/");
           Loading.hide();

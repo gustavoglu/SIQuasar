@@ -8,7 +8,7 @@
       <q-input :error="$v.despesaMutavel.Valor.$error" class="q-ma-sm" v-if="despesaMutavel.Id_TipoDespesa != 'e6eb1d20-b62f-41c9-879d-c7f53f973d27'" v-model="despesaMutavel.Valor" type="number" stack-label="Valor"/>
       <q-input class="q-ma-sm" disable v-model="KmComputed" type="number" stack-label="Valor" v-if="despesaMutavel.Id_TipoDespesa == 'e6eb1d20-b62f-41c9-879d-c7f53f973d27'"/>
       <q-input class="q-ma-sm"  v-model="despesaMutavel.Comentarios" type="textarea" stack-label="Comentários"/>
-      <q-btn-group  :content-css="{width: '100%'}" >
+      <q-btn-group>
         <q-btn v-if="edit" color="negative" @click.native="excluir" >Excluir</q-btn>
         <q-btn color="primary" @click.native="cancelar" >Cancelar</q-btn>
         <q-btn color="secondary" @click.native="salvar">Salvar</q-btn>
